@@ -1,66 +1,38 @@
 # TR Approach Chart Finder
 
-Turkey approach chart finder and training helper for publicly available DHMI AIP PDF charts.
+TR Approach Chart Finder, Turkiye havalimanlari icin public DHMI AIP approach chartlarini bulmaya ve incelemeye yarayan yerel bir web uygulamasidir.
 
-The app runs a local Node.js server, scans public DHMI approach chart PDFs for Turkish airports, shows validated charts in the browser, and provides chart-reading prompts for training use.
+Uygulama chartlari tarayabilir, bulunan PDF'leri tarayicida gosterebilir ve egitim amacli chart okuma destegi sunar.
 
-## Features
+## Kolay Kurulum
 
-- Search Turkish airports by ICAO/IATA, city, or airport name
-- Discover public approach chart PDFs from DHMI AIP documents
-- View selected PDFs in the browser
-- Show runway data from OurAirports
-- Provide training-oriented chart briefing help
-- Optional local address: `http://tr-approach-chart-finder.local:8787`
+Windows kullanicilari icin kurulum basittir:
 
-## Requirements
+1. GitHub'da yesil `Code` butonuna basin.
+2. `Download ZIP` secenegiyle projeyi indirin.
+3. ZIP dosyasini bir klasore cikarin.
+4. `TR-Approach-Chart-Finder-Setup.cmd` dosyasina cift tiklayin.
 
-- Node.js 18 or newer
-- Internet access for DHMI AIP PDFs and OurAirports runway data
-- Optional: Python with `pypdf` if you want the PDF text extraction helper paths to work outside the original Codex runtime
+Kurulum dosyasi gerekli calisma motorunu otomatik hazirlar, masaustune kisayol ekler ve uygulamayi baslatir.
 
-## Windows Install
+## Kullanim
 
-1. Click the green `Code` button on GitHub.
-2. Click `Download ZIP`.
-3. Extract the ZIP file.
-4. Double-click `install-windows.cmd`.
+Kurulumdan sonra masaustundeki `TR Approach Chart Finder` kisayoluna cift tiklayarak uygulamayi acabilirsiniz.
 
-The installer checks for Node.js, creates a desktop shortcut, and starts the app.
+Uygulama acildiginda tarayicida yerel olarak calisir. Internet baglantisi gerekir, cunku chartlar public DHMI kaynaklarindan kontrol edilir.
 
-## Run
+## Ozellikler
 
-From the project folder:
+- Turkiye havalimanlarini ICAO, IATA, sehir veya isimle arama
+- Public DHMI AIP approach chart PDF'lerini bulma
+- Secilen chart PDF'ini tarayicida goruntuleme
+- Pist bilgilerini gosterme
+- Egitim amacli chart okuma yardimi
 
-```powershell
-npm start
-```
+## Onemli Not
 
-Then open:
+Bu uygulama egitim ve chart okuma destegi icindir. Ucus operasyonlari icin her zaman resmi ve guncel havacilik kaynaklari kontrol edilmelidir.
 
-```text
-http://localhost:8787
-```
+## Gelistirici Notu
 
-On Windows, you can also run:
-
-```powershell
-.\outputs\start-chartlab.cmd
-```
-
-## Project Structure
-
-```text
-outputs/
-  server.js
-  turkiye-chart-finder.html
-  start-chartlab.cmd
-  setup-custom-address-admin.cmd
-  tr-approach-chart-finder.ico
-```
-
-`work/` is used for local cache files, downloaded temporary PDFs, and logs. It is intentionally ignored by Git.
-
-## Notes
-
-This tool is for training and chart-reading assistance. Always verify current operational aeronautical information from official sources before flight use.
+Manuel calistirmak isteyenler proje klasorunde `npm start` komutunu kullanabilir.
