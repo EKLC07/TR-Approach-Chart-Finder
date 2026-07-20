@@ -19,6 +19,15 @@ The app runs a local Node.js server, scans public DHMI approach chart PDFs for T
 - Internet access for DHMI AIP PDFs and OurAirports runway data
 - Optional: Python with `pypdf` if you want the PDF text extraction helper paths to work outside the original Codex runtime
 
+## Windows Install
+
+1. Click the green `Code` button on GitHub.
+2. Click `Download ZIP`.
+3. Extract the ZIP file.
+4. Double-click `install-windows.cmd`.
+
+The installer checks for Node.js, creates a desktop shortcut, and starts the app.
+
 ## Run
 
 From the project folder:
