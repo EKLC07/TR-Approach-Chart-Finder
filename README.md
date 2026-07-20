@@ -1,38 +1,38 @@
 # TR Approach Chart Finder
 
-TR Approach Chart Finder, Turkiye havalimanlari icin public DHMI AIP approach chartlarini bulmaya ve incelemeye yarayan yerel bir web uygulamasidir.
+TR Approach Chart Finder is a local web app for finding and reviewing public DHMI AIP approach charts for airports in Turkey.
 
-Uygulama chartlari tarayabilir, bulunan PDF'leri tarayicida gosterebilir ve egitim amacli chart okuma destegi sunar.
+The app can scan available charts, open the selected PDF in your browser, and provide training-oriented chart reading support.
 
-## Kolay Kurulum
+## Easy Windows Setup
 
-Windows kullanicilari icin kurulum basittir:
+Installation is designed to be simple:
 
-1. GitHub'da yesil `Code` butonuna basin.
-2. `Download ZIP` secenegiyle projeyi indirin.
-3. ZIP dosyasini bir klasore cikarin.
-4. `TR-Approach-Chart-Finder-Setup.cmd` dosyasina cift tiklayin.
+1. Click the green `Code` button on GitHub.
+2. Select `Download ZIP`.
+3. Extract the ZIP file.
+4. Double-click `TR-Approach-Chart-Finder-Setup.cmd`.
 
-Kurulum dosyasi gerekli calisma motorunu otomatik hazirlar, masaustune kisayol ekler ve uygulamayi baslatir.
+The setup file prepares the required runtime automatically, creates a desktop shortcut, and starts the app.
 
-## Kullanim
+## How To Use
 
-Kurulumdan sonra masaustundeki `TR Approach Chart Finder` kisayoluna cift tiklayarak uygulamayi acabilirsiniz.
+After setup, double-click the `TR Approach Chart Finder` shortcut on your desktop.
 
-Uygulama acildiginda tarayicida yerel olarak calisir. Internet baglantisi gerekir, cunku chartlar public DHMI kaynaklarindan kontrol edilir.
+The app runs locally in your browser. An internet connection is required because charts are checked from public DHMI sources.
 
-## Ozellikler
+## Features
 
-- Turkiye havalimanlarini ICAO, IATA, sehir veya isimle arama
-- Public DHMI AIP approach chart PDF'lerini bulma
-- Secilen chart PDF'ini tarayicida goruntuleme
-- Pist bilgilerini gosterme
-- Egitim amacli chart okuma yardimi
+- Search airports in Turkey by ICAO, IATA, city, or airport name
+- Find public DHMI AIP approach chart PDFs
+- View selected chart PDFs in the browser
+- Show runway information
+- Get training-oriented chart reading support
 
-## Onemli Not
+## Important Note
 
-Bu uygulama egitim ve chart okuma destegi icindir. Ucus operasyonlari icin her zaman resmi ve guncel havacilik kaynaklari kontrol edilmelidir.
+This app is for training and chart-reading support only. Always verify current operational aeronautical information from official sources before flight use.
 
-## Gelistirici Notu
+## Developer Note
 
-Manuel calistirmak isteyenler proje klasorunde `npm start` komutunu kullanabilir.
+Advanced users can also run the app manually with `npm start` from the project folder.
