@@ -31,7 +31,7 @@ The app runs locally in your browser. An internet connection is required because
 
 ## Important Note
 
-This app is for training and chart-reading support only. Always verify current operational aeronautical information from official sources before flight use.
+This application is intended for educational and graphic reading support purposes only. It is not suitable for professional use in real-life situations.
 
 ## Developer Note
 
