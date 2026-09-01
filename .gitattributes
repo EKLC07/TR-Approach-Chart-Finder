@@ -1,2 +1,3 @@
-outputs/** linguist-generated
+outputs/turkiye-chart-finder.html linguist-generated
+outputs/start-chartlab.cmd linguist-vendored
 *.cmd linguist-vendored
