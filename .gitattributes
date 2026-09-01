@@ -1,3 +1,3 @@
-outputs/turkiye-chart-finder.html linguist-generated
-outputs/start-chartlab.cmd linguist-vendored
+outputs/** linguist-generated
+app/__pycache__/** linguist-generated
 *.cmd linguist-vendored
