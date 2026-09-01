@@ -1,6 +1,6 @@
 AIRPORTS_RAW = [
     ("LTAC", "ESB", "Ankara", "Esenboğa Havalimanı"),
-    ("LTAE", "ANK", "Ankara", "Mürted / Akıncı Hava Üssü"),
+    ("LTAE", "ANK", "Ankara", "Mürted Hava Üssü"),
     ("LTAF", "ADA", "Adana", "Şakirpaşa Havalimanı"),
     ("LTAH", "AFY", "Afyon", "Afyon Havalimanı"),
     ("LTAI", "AYT", "Antalya", "Antalya Havalimanı"),
