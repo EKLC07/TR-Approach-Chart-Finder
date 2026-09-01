@@ -38,3 +38,4 @@ After uninstalling, you can delete the project folder if you no longer need it.
 ## Important Note
 
 This app is for flight simulation, training, and chart-reading support only. Always verify current operational aeronautical information from official sources before real flight use.
+Built with Python.
