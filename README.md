@@ -17,7 +17,7 @@ The setup file prepares the required portable Python runtime automatically, crea
 
 After setup, double-click the TR Approach Chart Finder shortcut on your desktop.
 
-The app runs locally in your browser at http://localhost:8787.
+The app runs locally in your browser.
 
 ## Uninstall
 
