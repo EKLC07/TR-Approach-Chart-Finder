@@ -1,6 +1,6 @@
 # TR Approach Chart Finder
 
-TR Approach Chart Finder is a local web app for finding and reviewing public DHMI AIP approach charts for airports in Turkey.
+TR Approach Chart Finder is a local web app for finding and reviewing public DHMI AIP approach charts for airports in Türkiye.
 
 This version uses a Python backend, so the project is easier to read, modify, and extend from Python.
 
