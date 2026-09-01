@@ -11,20 +11,20 @@ def geography_profile(airport, lang="en"):
 
     if lang == "tr":
         if lon > 39.5 and lat > 38.5:
-            return "Dogu veya Kuzeydogu Anadolu karakteri; yuksek rakim, daglik cevre, kis kosullari ve buzlanma farkindaligi onemlidir."
+            return "Doğu veya Kuzeydoğu Anadolu karakteri; yüksek rakım, dağlık çevre, kış koşulları ve buzlanma farkındalığı önemlidir."
         if lon > 39.0 and lat <= 38.5:
-            return "Guneydogu Anadolu platosu etkisi; yaz sicaklari, gorus/toz ve sicak hava performansi yaklasma brifinginde dusunulmelidir."
+            return "Güneydoğu Anadolu platosu etkisi; yaz sıcakları, görüş/toz ve sıcak hava performansı yaklaşma brifinginde düşünülmelidir."
         if lat > 40.7 and lon > 32:
-            return "Karadeniz kusagina yakin; nem, yagis, dusuk bulut tabani ve kiyi-dag gecisleri yaklasma farkindaligi yaratir."
+            return "Karadeniz kuşağına yakın; nem, yağış, düsük bulut tabanı ve kıyı-dağ geçişleri yaklaşma farkındalığı yaratır."
         if lon < 30.5 and lat < 39.5:
-            return "Ege veya Akdeniz kiyi etkilerine yakin; deniz meltemi, yaz sicaklari ve cevredeki tepelik arazi dikkate alinir."
+            return "Ege ve Akdeniz kıyı etkilerine yakın; deniz meltemi, yaz sıcakları ve çevredeki tepelik arazi dikkate alınır."
         if lon < 31.5 and lat >= 39.5:
-            return "Marmara/Ege gecis bolgesi; deniz etkili hava, sehirlesme ve tepelik arazi birlikte degerlendirilebilir."
-        if city == "Istanbul":
-            return "Marmara havzasi karakteri; deniz etkili hava ve yogun terminal sahasi one cikar."
-        if city in {"Antalya", "Mugla"}:
-            return "Akdeniz/Ege turizm kiyisina yakin; deniz etkisi, daglik cevre ve yaz sicakligi birlikte degerlendirilir."
-        return "Ic Anadolu veya gecis kusagi karakteri; genis plato, rakim, mevsimsel ruzgar ve kis sartlari onemlidir."
+            return "Marmara/Ege geçiş bölgesi; deniz etkili hava, şehirleşme ve tepelik arazi birlikte değerlendirilebilir."
+        if city == "İstanbul":
+            return "Marmara havzası karakteri; deniz etkili hava ve yoğun terminal sahası öne çıkar."
+        if city in {"Antalya", "Muğla"}:
+            return "Akdeniz/Ege turizm kıyısına yakın; deniz etkisi, dağlık çevre ve yaz sıcaklığı birlikte değerlendirilir."
+        return "İç Anadolu veya geciş kuşağı karakteri; geniş plato, rakım, mevsimsel rüzgar ve kış şartları önemlidir."
 
     if lon > 39.5 and lat > 38.5:
         return "Eastern or Northeastern Anatolian terrain profile; high elevation, surrounding mountains, winter weather, and icing awareness are important."
@@ -36,9 +36,9 @@ def geography_profile(airport, lang="en"):
         return "Close to Aegean or Mediterranean coastal influences; sea breeze, summer heat, and nearby hilly terrain should be considered."
     if lon < 31.5 and lat >= 39.5:
         return "Located in the Marmara/Aegean transition region; maritime weather, urban areas, and hilly terrain may all be relevant."
-    if city == "Istanbul":
+    if city == "İstanbul":
         return "Located in the Marmara basin, where maritime weather and a dense terminal environment are prominent."
-    if city in {"Antalya", "Mugla"}:
+    if city in {"Antalya", "Muğla"}:
         return "Near the Mediterranean/Aegean tourism coast; maritime influence, mountainous surroundings, and summer heat should be considered together."
     return "Interior Anatolian or transition-zone profile; broad plateau terrain, elevation, seasonal winds, and winter conditions are relevant to approach awareness."
 
@@ -49,12 +49,12 @@ def airport_profile(icao, lang="en"):
         return None
 
     if lang == "tr":
-        traffic = "Sivil yolcu trafigi sinirli veya askeri/ozel kullanim karakteri baskindir." if icao in MILITARY_LIKE else "Bolgesel yolcu trafigi agirliklidir; ic hat baglantilari ve yerel talep belirleyicidir."
+        traffic = "Sivil yolcu trafiği sınırlı veya askeri/özel kullanım karakteri baskındır." if icao in MILITARY_LIKE else "Bölgesel yolcu trafiği ağırlıklıdır; iç hat bağlantıları ve yerel talep belirleyicidir."
         return {
-            "nameOrigin": f"Adi hizmet verdigi {airport['city']} bolgesiyle iliskilidir.",
+            "nameOrigin": f"Adı hizmet verdiği {airport['city']} bölgesiyle ilişkilidir.",
             "traffic": traffic,
             "geography": geography_profile(airport, "tr"),
-            "statsSource": "Guncel kesin yolcu sayilari icin resmi DHMI istatistikleri kontrol edilmelidir.",
+            "statsSource": "Güncel kesin yolcu sayıları için resmi DHMI istatistikleri kontrol edilmelidir.",
         }
 
     traffic = "Civil passenger traffic is limited or the airport has a military/special-use character." if icao in MILITARY_LIKE else "Regional passenger traffic is the main profile; domestic links and local demand are usually the key drivers."
@@ -76,7 +76,7 @@ def airport_info(icao, lang="en"):
         return {
             "airport": airport,
             "terrain": geography_profile(airport, "tr"),
-            "approach": "Yaklasma brifinginde chart basligi, procedure tipi, IAF/IF/FAF, profil irtifalari, minimumlar ve missed approach sirayla okunmalidir.",
+            "approach": "Yaklaşma brifinginde chart başlığı, prosedür tipi, IAF/IF/FAF, profil irtifaları, minimumlar ve pas geçme sırayla okunmalıdır.",
             "culture": profile["nameOrigin"],
             "profile": profile,
         }

@@ -104,32 +104,46 @@
       background: #d9e6ef;
       color: #102638;
     }
-    .leaflet-container { font: inherit; }
-    .leaflet-popup-content { margin: 9px 11px; color: #17202a; }
-    .leaflet-control-attribution { font-size: 10px; }
-    .runwayButtons {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .runwayButtons button {
-      min-height: 34px;
-      font-size: 13px;
-    }
-    .runwayButtons button.active {
-      background: #ffffff;
-      color: #102638;
-    }
-    button {
-      min-height: 40px;
-      border: 1px solid rgba(255,255,255,.18);
-      border-radius: 6px;
-      background: rgba(255,255,255,.1);
-      color: #eef6ff;
-      cursor: pointer;
-      font-weight: 850;
-    }
+    .leaflet-popup-content {
+    margin: 7px 9px;
+    color: #17202a;
+    max-width: 260px;
+    overflow-wrap: break-word;
+  .leaflet-popup-content-wrapper {
+    max-width: 280px;
+}
+
+}
+    
+  .runwayButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px !important;
+    margin-top: 10px;
+}
+
+button {
+    min-height: 34px;
+    padding: 7px 14px;
+    margin: 0;
+
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, 0.07);
+    color: #eef6ff;
+
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease;
+}
+    
     button:hover { background: rgba(255,255,255,.18); }
     button:disabled { opacity: .7; cursor: progress; }
     .primary {
@@ -287,7 +301,7 @@
     <aside>
       <div>
         <h1 data-i18n="title">Türkiye Chart Lab</h1>
-        <p class="sub" data-i18n="subtitle">Public PDF chartları doğrular, açılabilenleri gösterir, seçili chart için eğitim asistanı sunar.</p>
+        <p class="sub" data-i18n="subtitle">Public PDF chartlarını doğrular, erişilebilir olanları sunar ve seçili chart için eğitim desteği sağlar.</p>
       </div>
       <div class="langSwitch">
         <button type="button" id="langTr">Türkçe</button>
@@ -315,7 +329,7 @@
         <div class="quick" id="quickButtons"></div>
       </div>
       <div class="coverage" id="coverageBox" data-i18n="coverageIdle">Detaylı tarama henüz çalışmadı.</div>
-      <div class="note" data-i18n="safetyNote">Listeye sadece public erişilebilen ve PDF olarak doğrulanan chartlar girer. Kapalı, login isteyen veya gösterilemeyen dosyalar saklanır.</div>
+      <div class="note" data-i18n="safetyNote">Listeye sadece erişilebilen ve PDF olarak doğrulanan chartlar girer. Kapalı, login isteyen veya gösterilemeyen dosyalar saklanır.</div>
     </aside>
 
     <section class="pane">

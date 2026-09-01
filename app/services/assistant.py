@@ -10,16 +10,16 @@ def assist(file_name, question="", lang="en"):
 
     if lang == "tr":
         lines = [
-            f"{airport} IAC {chart} - egitim amacli chart okuma yardimi",
-            f"Meydan farkindaligi: {context.get('terrain', '')} {context.get('approach', '')}",
+            f"{airport} IAC {chart} - eğitim amaçlı yaklaşma kartı okuma yardımı",
+            f"Meydan farkındalığı: {context.get('terrain', '')} {context.get('approach', '')}",
         ]
         if "MIN" in q or "DA" in q or "MDA" in q:
-            lines.append("Minimum okurken approach category, DA/DH veya MDA/MDH, OCA/OCH, RVR/VIS ve chart notlarini birlikte kontrol et.")
+            lines.append("Minimumlar okunurken yaklaşma kategorisi, DA/DH veya MDA/MDH, OCA/OCH, RVR/VIS ve yaklaşma kartı notlarını birlikte kontrol ediniz.")
         elif "MISSED" in q:
-            lines.append("Missed approach icin ilk tirmanis, donus yonu, hedef fix/holding, altitude ve varsa DME kosullarini ayri ayri oku.")
+            lines.append("Pas geçme icin ilk tırmanış, dönüş yönü, hedef fix/holding, altitude ve varsa DME koşullarını ayrı ayrı okuyunuz.")
         else:
-            lines.append("Genel okuma sirasi: chart basligi, plan view, profile view, minimumlar ve missed approach.")
-        lines.append("Uyari: Bu asistan sadece simulasyon ve egitim amaclidir.")
+            lines.append("Genel okuma sırası: yaklaşma kartı başlığı, plan view, profile view, minimumlar ve pas geçme.")
+        lines.append("Uyarı: Bu asistan sadece simülasyon ve eğitim amaçlıdır.")
         return {"answer": "\n\n".join(lines), "extractedTextPreview": ""}
 
     lines = [
