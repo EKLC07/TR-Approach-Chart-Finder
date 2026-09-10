@@ -88,10 +88,6 @@ Current starter target:
 
 To rebuild the language bank, run tools/build_ciguli_language_bank.py from the project folder.
 
-## Owner Training
-
-The customer-facing app does not show assistant training tools.
-
 
 ## Important Note
 
