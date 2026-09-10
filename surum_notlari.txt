@@ -1,0 +1,106 @@
+TÜRKİYE CHART LAB - YENİ SÜRÜM DETAYLARI
+========================================
+
+Bu sürümde odak üç ana noktadaydı:
+
+1) chart bulma ve görüntüleme deneyimini daha hızlı hale getirmek,
+2) Ciguli'yi seçili meydan ve chart bağlamını daha iyi anlayan bir yardımcıya dönüştürmek,
+3) arayüzü daha bütün, daha premium ve havacılık temalı bir görünüme taşımak.
+
+
+ÖNE ÇIKAN YENİLİKLER
+--------------------
+
+- Uygulama dili değiştirildiğinde arayüzün tamamının daha tutarlı şekilde uyarlanması hedeflendi.
+- "Turkey" yerine doğru yerelleştirme ile "Türkiye" kullanımı düzenlendi.
+- Uygulama logosu, iniş yapan uçak hissine daha yakın olacak şekilde güncellendi.
+- Genel tema daha grimsi, tok ve havacılık odaklı bir yapıya taşındı.
+- Sayfa, pencere içinde pencere gibi durmak yerine daha bütün bir kokpit/chart ekranı hissi verecek şekilde düzenlendi.
+- Arka plana burun sağa bakan, yan profilden 737 tarzı uçak görseli eklendi.
+- Arka plan uçağındaki kareli/ucuz PNG görünümü temizlendi.
+- Pist ışıkları ve amber vurgu renkleriyle gece/gün batımı uçuş atmosferi güçlendirildi.
+
+
+CHART BULMA VE PDF DENEYİMİ
+---------------------------
+
+- Chart listesi daha okunur ve sade hale getirildi.
+- Uzun PDF dosya isimlerinin arayüzü bozması azaltıldı.
+- PDF seçildiğinde chartın ekrana daha düzgün oturması için görünüm iyileştirildi.
+- PDF alanına büyütme, küçültme ve ekrana sığdırma kontrolleri eklendi.
+- PDF indirme butonu daha premium bir görünüme taşındı.
+- Harita alanı daha anlamlı görünecek şekilde büyütüldü ve sık meydanlar bölümü daha az baskın hale getirildi.
+- Chart seçildiğinde kullanıcıya dosyayı hızlıca görüntüleme deneyimi korunurken genel görünüm daha temiz hale getirildi.
+
+
+CİGULİ GELİŞTİRMELERİ
+---------------------
+
+- Ciguli artık seçili meydan, şehir, pist ve chart bağlamını daha iyi kullanacak şekilde geliştirildi.
+- Türkçe ve İngilizce sorulara daha uyumlu cevap vermesi hedeflendi.
+- Kalıp cevaplar azaltıldı; daha bağlama göre düşünen cevap yapısı güçlendirildi.
+- "Ciguli Brain" gibi arayüzde gereksiz duran etiketler kaldırıldı.
+- Ciguli mesajlarında kullanıcı ve Ciguli için saat/dakika bilgisi gösterilmeye başlandı.
+- Her PDF seçiminde otomatik sohbet mesajı basması daha kontrollü hale getirildi.
+- Chart seçimini sohbete dahil etme davranışı için kullanıcı kontrolü eklendi.
+- Mesaj yazma alanı, sohbet bölümünün doğrudan altında kalacak şekilde daha kullanışlı hale getirildi.
+
+
+CHART ANALİZİ
+-------------
+
+Analiz tarafında boş veya dekoratif bilgi yerine, pilotun gerçekten kullanacağı operasyonel veriler öne çıkarılacak şekilde düzenleme yapıldı.
+
+Önceliklendirilen bilgiler:
+
+- meydan adı ve şehir
+- pist adı
+- yaklaşma tipi
+- course / baş değeri
+- AD elevation
+- threshold elevation
+- transition altitude
+- APP / profil başlangıç irtifaları
+- 3 derecelik alçalmanın başladığı nokta veya irtifa
+- MAPt / missed approach point
+- max holding speed
+- VOR, NDB, DME, ILS, ATIS gibi frekanslar
+- minima değerleri
+- missed approach metni
+- prosedürde kullanılan navigasyon yardımcıları
+
+Analiz kartlarındaki "okundu", "kutudan okundu" gibi teknik açıklamalar kaldırılarak daha sade ve elegant bir görünüm hedeflendi.
+
+
+KULLANICI REHBERLERİ
+--------------------
+
+Bu sürümle birlikte Ciguli'nin nasıl daha verimli kullanılacağını anlatan iki rehber eklendi:
+
+- ciguli_kullanim_rehberi.txt
+- ciguli_user_guide_en.txt
+
+Bu rehberlerde kullanıcıya chart seçme, analiz başlatma, Ciguli'ye doğru soru sorma ve kritik değerleri doğrulama konusunda pratik akış sunuldu.
+
+
+PAYLAŞIM PAKETİ
+---------------
+
+Paylaşılacak pakette kullanıcı için gerekli uygulama dosyaları bulunur.
+
+Paket dışında bırakılanlar:
+
+- owner-tools
+- .git
+- eski release-artifacts içerikleri
+
+Amaç, kullanıcının gereksiz geliştirici dosyalarıyla uğraşmadan uygulamayı indirip tek setup ile kullanabilmesidir.
+
+
+NOT
+---
+
+Ciguli bir chart okuma ve brifing yardımcısıdır.
+Gerçek uçuş, eğitim, sınav veya operasyonel kararlar için resmi AIP, güncel chart, NOTAM, ATC talimatı ve geçerli havacılık kuralları esas alınmalıdır.
+
+Kritik sayısal değerler her zaman chart üzerinde ayrıca doğrulanmalıdır.

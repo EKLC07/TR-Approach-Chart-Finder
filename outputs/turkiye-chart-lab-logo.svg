@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Türkiye Chart Lab logo">
+  <defs>
+    <linearGradient id="sky" x1="38" y1="28" x2="212" y2="228" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#eaf7ff"/>
+      <stop offset=".42" stop-color="#66c7ff"/>
+      <stop offset="1" stop-color="#38d48a"/>
+    </linearGradient>
+    <linearGradient id="navy" x1="72" y1="32" x2="184" y2="224" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#071827"/>
+      <stop offset="1" stop-color="#102f49"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.19 0 0 0 0 0.63 0 0 0 0 0.95 0 0 0 .55 0"/>
+      <feBlend in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <rect x="18" y="18" width="220" height="220" rx="58" fill="url(#navy)"/>
+  <rect x="27" y="27" width="202" height="202" rx="50" fill="none" stroke="#bde7ff" stroke-opacity=".28" stroke-width="4"/>
+  <circle cx="128" cy="128" r="78" fill="none" stroke="#66c7ff" stroke-opacity=".28" stroke-width="8"/>
+  <path d="M128 42v172" stroke="#f7fbff" stroke-opacity=".72" stroke-width="10" stroke-linecap="round"/>
+  <path d="M76 196h104" stroke="#ffc857" stroke-width="9" stroke-linecap="round" stroke-dasharray="5 15"/>
+  <path d="M74 68l54 46 54-46 14 17-43 60 12 46-14 10-23-42-23 42-14-10 12-46-43-60z" fill="url(#sky)" filter="url(#glow)"/>
+  <circle cx="128" cy="196" r="11" fill="#ffc857"/>
+</svg>

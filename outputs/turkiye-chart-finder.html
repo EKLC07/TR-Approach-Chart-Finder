@@ -1,0 +1,3893 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Türkiye Approach Chart Lab</title>
+  <link rel="icon" href="/tr-approach-chart-finder.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin=""></script>
+  <style>
+    :root {
+      --bg: #eef2f5;
+      --panel: #fff;
+      --ink: #17202a;
+      --muted: #627181;
+      --line: #d7e0e8;
+      --blue: #145ea8;
+      --green: #157347;
+      --amber: #8a5b00;
+      --red: #b42318;
+      --shadow: 0 12px 30px rgba(20, 38, 56, .1);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, input, select, textarea { font: inherit; }
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 320px 360px minmax(0, 1fr) 360px;
+    }
+    aside {
+      background: #102638;
+      color: #eef6ff;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: 23px; line-height: 1.15; letter-spacing: 0; }
+    h2 { font-size: 19px; line-height: 1.2; letter-spacing: 0; }
+    h3 { font-size: 15px; letter-spacing: 0; }
+    .sub { color: #b7cbde; font-size: 14px; line-height: 1.45; margin-top: 6px; }
+    label {
+      display: block;
+      margin-bottom: 7px;
+      color: #c9dceb;
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    input, select, textarea {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: 6px;
+      padding: 11px 12px;
+      background: rgba(255,255,255,.96);
+      color: var(--ink);
+      outline: none;
+    }
+    textarea { min-height: 96px; resize: vertical; }
+    input:focus, select:focus, textarea:focus {
+      border-color: #7bc0ff;
+      box-shadow: 0 0 0 3px rgba(123,192,255,.24);
+    }
+    .control {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 8px;
+      padding: 13px;
+    }
+    .quick {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .langSwitch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .langSwitch button.active {
+      background: #ffffff;
+      color: #102638;
+    }
+    .mapBox {
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .turkeyMap {
+      width: 100%;
+      height: 260px;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #d9e6ef;
+      color: #102638;
+    }
+    .leaflet-popup-content {
+      margin: 7px 9px;
+      color: #17202a;
+      max-width: 260px;
+      overflow-wrap: break-word;
+    }
+    .leaflet-popup-content-wrapper {
+      max-width: 280px;
+    }
+    
+  .runwayButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px !important;
+    margin-top: 10px;
+}
+
+button {
+    min-height: 34px;
+    padding: 7px 14px;
+    margin: 0;
+
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, 0.07);
+    color: #eef6ff;
+
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease;
+}
+    
+    button:hover { background: rgba(255,255,255,.18); }
+    button:disabled { opacity: .7; cursor: progress; }
+    .primary {
+      width: 100%;
+      min-height: 48px;
+      background: #1b74bd;
+      border-color: #2f88cf;
+      color: #fff;
+    }
+    .note {
+      border-left: 3px solid #f0b84d;
+      padding: 10px 12px;
+      background: rgba(255,255,255,.06);
+      color: #dce9f5;
+      border-radius: 4px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .pane {
+      min-width: 0;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+      border-right: 1px solid var(--line);
+    }
+    .viewerPane { background: var(--bg); }
+    .assistantPane {
+      background:
+        radial-gradient(circle at top right, rgba(47, 136, 207, .22), transparent 34%),
+        linear-gradient(180deg, #071827 0%, #0c2436 100%);
+      border-right: 0;
+      color: #eef6ff;
+    }
+    .assistantPane .status { color: #b9cede; }
+    .assistantPane .card,
+    .assistantPane .chatWindow {
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.13);
+      box-shadow: 0 16px 34px rgba(0,0,0,.22);
+    }
+    .card, .chartList, .viewerTop, .answer, .chatWindow {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    .card { padding: 14px; display: grid; gap: 7px; }
+    .icao { font-size: 32px; font-weight: 950; line-height: 1; letter-spacing: 0; }
+    .muted { color: var(--muted); font-size: 14px; line-height: 1.4; }
+    .status { color: var(--muted); font-size: 14px; line-height: 1.4; }
+    .chartList { overflow: hidden; }
+    .chartButton {
+      width: 100%;
+      min-height: 62px;
+      padding: 12px 14px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      background: #fff;
+      color: var(--ink);
+      text-align: left;
+    }
+    .chartButton:hover { background: #eef6ff; }
+    .chartButton.active { background: #dceeff; box-shadow: inset 4px 0 0 var(--blue); }
+    .chartButton:last-child { border-bottom: 0; }
+    .chartTitle { font-weight: 900; overflow-wrap: anywhere; }
+    .chartMeta { color: var(--muted); font-size: 12px; margin-top: 3px; overflow-wrap: anywhere; }
+    .tag {
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+      color: var(--green);
+      background: #e8f5ee;
+    }
+    .empty {
+      background: #fff;
+      border: 1px dashed #aebdcc;
+      border-radius: 8px;
+      padding: 26px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+    .viewerTop {
+      padding: 13px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .download {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      border-radius: 6px;
+      background: var(--blue);
+      color: #fff;
+      padding: 8px 12px;
+      font-weight: 850;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .pdfFrame {
+      width: 100%;
+      flex: 1;
+      min-height: 690px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+    .assistantButtons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .assistantButtons button, .askBtn {
+      background: #1b74bd;
+      color: #fff;
+      border: 1px solid #2f88cf;
+    }
+    .askBtn { width: 100%; }
+    .analysisPanel {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .analysisActions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .analysisGrid {
+      display: grid;
+      gap: 8px;
+    }
+    .analysisItem {
+      border: 1px solid rgba(191,227,255,.18);
+      border-radius: 14px;
+      background: rgba(191,227,255,.09);
+      padding: 10px 11px;
+      line-height: 1.38;
+    }
+    .analysisItem.needs-ocr {
+      border-color: rgba(255, 209, 112, .32);
+      background: rgba(255, 209, 112, .08);
+    }
+    .analysisItem strong {
+      display: block;
+      color: #ffe3a6;
+      margin-bottom: 4px;
+    }
+    .analysisText {
+      white-space: pre-line;
+    }
+    .analysisRows {
+      display: grid;
+      gap: 7px;
+      margin-top: 8px;
+    }
+    .analysisRow {
+      display: grid;
+      grid-template-columns: minmax(66px, .42fr) minmax(0, 1.35fr);
+      gap: 8px;
+      align-items: center;
+      padding: 8px 10px;
+      border: 1px solid rgba(225, 237, 246, .13);
+      border-radius: 12px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.085), rgba(255,255,255,.035));
+    }
+    .analysisLabel {
+      color: #c3d4e1;
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+    }
+    .analysisValue {
+      color: #f7fbff;
+      font-size: 13px;
+      line-height: 1.22;
+      font-weight: 760;
+      font-variant-numeric: tabular-nums;
+      overflow-wrap: anywhere;
+      text-wrap: balance;
+    }
+    .analysisSource {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 5px;
+    }
+    .assistantHeader {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .assistantPill {
+      border: 1px solid rgba(123,192,255,.28);
+      background: rgba(123,192,255,.12);
+      color: #bfe3ff;
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+    .assistantSettings {
+      margin-top: -2px;
+      padding: 8px 10px;
+      border: 1px solid rgba(191,227,255,.14);
+      border-radius: 16px;
+      background: rgba(255,255,255,.055);
+    }
+    .switchLine {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0;
+      color: rgba(225,239,250,.86);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .01em;
+      text-transform: none;
+      cursor: pointer;
+    }
+    .switchLine input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .switchKnob {
+      position: relative;
+      width: 34px;
+      height: 20px;
+      flex: 0 0 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(220,231,239,.22);
+      background: rgba(10, 16, 22, .38);
+      box-shadow: inset 0 1px 3px rgba(0,0,0,.32);
+    }
+    .switchKnob::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: rgba(235, 243, 249, .88);
+      transition: transform .18s ease, background .18s ease;
+    }
+    .switchLine input:checked + .switchKnob {
+      border-color: rgba(255, 218, 148, .48);
+      background: rgba(168, 124, 42, .38);
+    }
+    .switchLine input:checked + .switchKnob::after {
+      transform: translateX(14px);
+      background: #ffd889;
+    }
+    .chatWindow {
+      min-height: 300px;
+      max-height: 520px;
+      overflow: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .chatMessage {
+      max-width: 92%;
+      border-radius: 14px;
+      padding: 10px 12px;
+      line-height: 1.45;
+      font-size: 14px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .chatMessage.ai {
+      align-self: flex-start;
+      background: rgba(238,246,255,.1);
+      border: 1px solid rgba(211,232,255,.18);
+      color: #f2f8ff;
+    }
+    .chatMessage.user {
+      align-self: flex-end;
+      background: #1b74bd;
+      border: 1px solid #4aa3ed;
+      color: #fff;
+    }
+    .chatMeta {
+      margin-top: 6px;
+      color: #a9bdd1;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+    .composerRow {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: end;
+    }
+    .composerRow textarea {
+      min-height: 74px;
+    }
+    .clearChatBtn {
+      background: transparent;
+      color: #cfe0f3;
+      border: 1px solid rgba(255,255,255,.16);
+      min-height: 34px;
+    }
+    .typingDots::after {
+      content: "";
+      display: inline-block;
+      width: 28px;
+      text-align: left;
+      animation: dots 1.1s steps(4, end) infinite;
+    }
+    @keyframes dots {
+      0% { content: ""; }
+      25% { content: "."; }
+      50% { content: ".."; }
+      75%, 100% { content: "..."; }
+    }
+    .answer {
+      padding: 13px;
+      color: #243342;
+      white-space: pre-wrap;
+      line-height: 1.45;
+      font-size: 14px;
+      min-height: 180px;
+    }
+    .error {
+      color: var(--red);
+      background: #fff1f0;
+      border: 1px solid #ffd0cc;
+      border-radius: 8px;
+      padding: 12px;
+      line-height: 1.45;
+    }
+    .coverage {
+      max-height: 180px;
+      overflow: auto;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 12px;
+      line-height: 1.45;
+      color: #dce9f5;
+    }
+    @media (max-width: 1280px) {
+      .app { grid-template-columns: 310px 360px minmax(0, 1fr); }
+      .assistantPane { grid-column: 1 / -1; }
+    }
+    body {
+      background:
+        radial-gradient(circle at 18% 12%, rgba(77, 166, 255, .18), transparent 28%),
+        radial-gradient(circle at 78% 6%, rgba(240, 184, 77, .12), transparent 25%),
+        linear-gradient(135deg, #06131f 0%, #0a1d2d 38%, #edf3f8 38%, #eef4f8 100%);
+    }
+    .app {
+      backdrop-filter: blur(14px);
+    }
+    aside {
+      background:
+        linear-gradient(180deg, rgba(7, 24, 39, .98), rgba(12, 36, 54, .96)),
+        repeating-linear-gradient(90deg, transparent 0 18px, rgba(255,255,255,.03) 18px 19px);
+      border-right: 1px solid rgba(191, 227, 255, .18);
+      box-shadow: 18px 0 50px rgba(0,0,0,.22);
+    }
+    h1 {
+      font-size: 25px;
+      letter-spacing: -.04em;
+    }
+    h2 {
+      letter-spacing: -.03em;
+    }
+    .control, .mapBox, .coverage, .note {
+      border-radius: 16px;
+      background: rgba(255,255,255,.075);
+      border-color: rgba(191,227,255,.18);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    input, select, textarea {
+      border-radius: 14px;
+      border-color: rgba(20, 94, 168, .18);
+      background: rgba(255,255,255,.94);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.7);
+    }
+    button, .download {
+      border-radius: 14px;
+      letter-spacing: -.01em;
+    }
+    .primary, .download, .askBtn {
+      background: linear-gradient(135deg, #145ea8, #2388d6);
+      border-color: rgba(123,192,255,.55);
+      box-shadow: 0 10px 24px rgba(20,94,168,.24);
+    }
+    .primary:hover, .download:hover, .askBtn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(20,94,168,.32);
+    }
+    .pane {
+      background: rgba(238,244,248,.82);
+      border-right-color: rgba(12, 36, 54, .08);
+    }
+    .viewerPane {
+      background:
+        linear-gradient(180deg, rgba(238,244,248,.92), rgba(226,236,244,.92));
+    }
+    .card, .chartList, .viewerTop, .empty, .pdfFrame {
+      border-radius: 18px;
+      border-color: rgba(19, 49, 78, .12);
+      box-shadow: 0 18px 44px rgba(20, 38, 56, .11);
+    }
+    .chartButton {
+      border-bottom-color: rgba(19,49,78,.09);
+    }
+    .chartButton.active {
+      background: linear-gradient(90deg, #dceeff, #f7fbff);
+      box-shadow: inset 5px 0 0 #f0b84d;
+    }
+    .tag {
+      background: #ecf8f1;
+      color: #10683f;
+    }
+    .assistantPane {
+      background:
+        radial-gradient(circle at 92% 8%, rgba(123,192,255,.28), transparent 30%),
+        radial-gradient(circle at 20% 95%, rgba(240,184,77,.16), transparent 28%),
+        linear-gradient(180deg, #06131f 0%, #0b2133 46%, #071827 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .assistantPane::before {
+      content: "✈︎";
+      position: absolute;
+      right: 18px;
+      bottom: 8px;
+      color: rgba(255,255,255,.035);
+      font-size: 120px;
+      transform: rotate(-18deg);
+      pointer-events: none;
+    }
+    .assistantPane .card,
+    .assistantPane .chatWindow {
+      background: rgba(255,255,255,.075);
+      border-color: rgba(191,227,255,.18);
+      border-radius: 20px;
+      backdrop-filter: blur(18px);
+    }
+    .assistantPill {
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    }
+    .chatMessage {
+      border-radius: 18px;
+    }
+    .chatMessage.ai {
+      background: rgba(191,227,255,.115);
+    }
+    .chatMessage.user {
+      background: linear-gradient(135deg, #145ea8, #2388d6);
+    }
+    .clearChatBtn {
+      border-radius: 999px;
+    }
+    @media (max-width: 920px) {
+      .app { grid-template-columns: 1fr; }
+      aside, .pane { padding: 16px; }
+      .quick { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .pdfFrame { min-height: 560px; }
+    }
+    /* Premium aviation cockpit theme */
+    :root {
+      --bg: #07121d;
+      --panel: rgba(247, 251, 255, .92);
+      --ink: #0d1b2a;
+      --muted: #55687b;
+      --line: rgba(140, 174, 204, .24);
+      --blue: #1f8be6;
+      --green: #38d48a;
+      --amber: #ffc857;
+      --red: #ff6b5f;
+      --shadow: 0 18px 46px rgba(0, 12, 28, .18);
+      --glass: rgba(11, 31, 48, .66);
+      --glass-strong: rgba(10, 28, 44, .84);
+      --glass-line: rgba(184, 224, 255, .18);
+    }
+    body {
+      min-height: 100vh;
+      background:
+        linear-gradient(115deg, rgba(9, 25, 40, .94), rgba(9, 25, 40, .28) 45%, rgba(231, 241, 249, .88) 45%, rgba(240, 247, 252, .96)),
+        radial-gradient(circle at 15% 18%, rgba(45, 156, 255, .28), transparent 28%),
+        radial-gradient(circle at 88% 12%, rgba(255, 200, 87, .18), transparent 22%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.045) 0 1px, transparent 1px 72px),
+        repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 72px),
+        #07121d;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -18vmax;
+      pointer-events: none;
+      background:
+        conic-gradient(from 214deg at 23% 42%, transparent 0 34deg, rgba(56, 212, 138, .13) 35deg 38deg, transparent 39deg 360deg),
+        radial-gradient(circle at 23% 42%, transparent 0 10rem, rgba(94, 174, 255, .08) 10.1rem 10.25rem, transparent 10.35rem 15rem, rgba(94,174,255,.055) 15.1rem 15.25rem, transparent 15.35rem);
+      filter: blur(.1px);
+      opacity: .72;
+    }
+    body::after {
+      content: "";
+      position: fixed;
+      left: 34px;
+      bottom: 22px;
+      pointer-events: none;
+      color: rgba(190, 225, 255, .13);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .22em;
+      transform: rotate(-.6deg);
+    }
+    .app {
+      position: relative;
+      min-height: 100vh;
+      gap: 0;
+      padding: 14px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.08), transparent 18%, transparent 80%, rgba(255,255,255,.05)),
+        rgba(255,255,255,.02);
+      backdrop-filter: blur(10px);
+    }
+    aside,
+    .pane {
+      position: relative;
+      z-index: 1;
+      border: 1px solid var(--glass-line);
+      border-left: 0;
+      background:
+        linear-gradient(180deg, rgba(14, 39, 59, .92), rgba(8, 24, 38, .86));
+      box-shadow: none;
+    }
+    aside {
+      border-left: 1px solid var(--glass-line);
+      border-radius: 24px 0 0 24px;
+      color: #f2f8ff;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(64, 170, 255, .24), transparent 32%),
+        linear-gradient(180deg, rgba(6, 22, 35, .98), rgba(9, 31, 48, .94));
+    }
+    aside::before {
+      content: "";
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      top: 82px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(123, 192, 255, .7), transparent);
+    }
+    .pane {
+      color: #102236;
+      background:
+        linear-gradient(180deg, rgba(241, 247, 252, .9), rgba(229, 239, 247, .82));
+      border-color: rgba(14, 45, 72, .14);
+    }
+    .viewerPane {
+      background:
+        linear-gradient(180deg, rgba(232, 241, 248, .92), rgba(218, 231, 241, .9));
+    }
+    .assistantPane {
+      border-radius: 0 24px 24px 0;
+      color: #eef7ff;
+      background:
+        radial-gradient(circle at 86% 8%, rgba(64, 170, 255, .3), transparent 30%),
+        radial-gradient(circle at 18% 90%, rgba(255, 200, 87, .14), transparent 28%),
+        linear-gradient(180deg, rgba(6, 21, 34, .98), rgba(8, 29, 45, .95));
+      overflow: hidden;
+    }
+    .assistantPane::before {
+      content: "";
+      right: 22px;
+      bottom: 6px;
+      color: rgba(255,255,255,.045);
+      font-size: 138px;
+      transform: rotate(-18deg);
+    }
+    h1 {
+      font-size: 26px;
+      letter-spacing: -.055em;
+      text-shadow: 0 8px 26px rgba(84, 171, 255, .28);
+    }
+    h2 {
+      color: #0b1f31;
+      font-size: 20px;
+      letter-spacing: -.04em;
+    }
+    .assistantPane h2,
+    aside h2,
+    aside h3 {
+      color: #f3f9ff;
+    }
+    label {
+      color: #d8eaff;
+      letter-spacing: .095em;
+    }
+    .sub,
+    aside .status {
+      color: #bfd5e8;
+    }
+    .control,
+    .mapBox,
+    .coverage,
+    .note,
+    .assistantPane .card,
+    .assistantPane .chatWindow {
+      background: rgba(255,255,255,.072);
+      border: 1px solid rgba(191, 227, 255, .18);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.09);
+      backdrop-filter: blur(18px);
+    }
+    .card,
+    .chartList,
+    .viewerTop,
+    .empty,
+    .pdfFrame,
+    .answer {
+      border-radius: 18px;
+      border: 1px solid rgba(14, 45, 72, .14);
+      background: rgba(255,255,255,.78);
+      box-shadow: none;
+    }
+    .card,
+    .viewerTop,
+    .empty {
+      backdrop-filter: blur(16px);
+    }
+    .chartList {
+      overflow: hidden;
+      background: rgba(255,255,255,.72);
+    }
+    .chartButton {
+      background: rgba(255,255,255,.55);
+      border-bottom: 1px solid rgba(14,45,72,.095);
+    }
+    .chartButton:hover {
+      background: rgba(232, 244, 255, .95);
+    }
+    .chartButton.active {
+      background: linear-gradient(90deg, rgba(216, 238, 255, .98), rgba(255,255,255,.76));
+      box-shadow: inset 5px 0 0 var(--amber);
+    }
+    .viewerTop {
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.86), rgba(235, 244, 251, .78));
+    }
+    .pdfFrame {
+      border-radius: 18px;
+      background: #fdfefe;
+      box-shadow: 0 18px 50px rgba(9, 31, 48, .16);
+    }
+    input,
+    select,
+    textarea {
+      border-radius: 16px;
+      border: 1px solid rgba(93, 135, 170, .2);
+      background: rgba(255,255,255,.94);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.78);
+    }
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(45, 156, 255, .78);
+      box-shadow: 0 0 0 4px rgba(45, 156, 255, .18);
+    }
+    button,
+    .download {
+      border-radius: 999px;
+      font-weight: 850;
+      transition: background .16s ease, border-color .16s ease, transform .16s ease, box-shadow .16s ease;
+    }
+    .primary,
+    .download,
+    .askBtn {
+      background: linear-gradient(135deg, #0d65b5, #2f9cf0);
+      border-color: rgba(151, 212, 255, .58);
+      box-shadow: 0 12px 28px rgba(20, 94, 168, .22);
+    }
+    .primary:hover,
+    .download:hover,
+    .askBtn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 34px rgba(20, 94, 168, .28);
+    }
+    .langSwitch {
+      padding: 4px;
+      border: 1px solid rgba(221, 230, 237, .10);
+      border-radius: 999px;
+      background:
+        linear-gradient(180deg, rgba(233, 239, 244, .08), rgba(14, 20, 27, .10));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 8px 20px rgba(0, 10, 20, .10);
+    }
+    .langSwitch button {
+      border: 0;
+      background: transparent;
+      color: #d9edff;
+    }
+    .langSwitch button.active {
+      color: #061827;
+      background: linear-gradient(135deg, #ffffff, #dff0ff);
+      box-shadow: 0 10px 26px rgba(123, 192, 255, .2);
+    }
+    .turkeyMap {
+      border-radius: 16px;
+      border: 1px solid rgba(191, 227, 255, .18);
+      filter: saturate(.95) contrast(1.02);
+    }
+    .runwayButtons button {
+      border-color: rgba(191, 227, 255, .18);
+      background: rgba(255,255,255,.08);
+    }
+    .runwayButtons button.active {
+      color: #071827;
+      background: linear-gradient(135deg, #ffe3a6, #ffc857);
+    }
+    .assistantPill {
+      border-color: rgba(56, 212, 138, .34);
+      background: rgba(56, 212, 138, .12);
+      color: #c8ffdf;
+    }
+    .chatMessage.ai {
+      background: rgba(191,227,255,.12);
+      border-color: rgba(191,227,255,.2);
+    }
+    .chatMessage.user {
+      background: linear-gradient(135deg, #0d65b5, #2f9cf0);
+      border-color: rgba(151, 212, 255, .55);
+    }
+    .analysisItem {
+      border-color: rgba(191,227,255,.18);
+      background: rgba(191,227,255,.1);
+    }
+    .analysisSource,
+    .assistantPane .muted,
+    .assistantPane .status {
+      color: #bfd5e8;
+    }
+    .empty {
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.82), rgba(235, 244, 251, .72));
+      border-style: dashed;
+    }
+    @media (max-width: 1280px) {
+      .app { grid-template-columns: 310px 360px minmax(0, 1fr); }
+      .assistantPane {
+        grid-column: 1 / -1;
+        border-radius: 0 0 24px 24px;
+      }
+      aside { border-radius: 24px 0 0 0; }
+    }
+    @media (max-width: 920px) {
+      .app {
+        grid-template-columns: 1fr;
+        padding: 10px;
+      }
+      aside,
+      .pane,
+      .assistantPane {
+        border-radius: 0;
+        border-left: 1px solid var(--glass-line);
+      }
+      aside { border-radius: 22px 22px 0 0; }
+      .assistantPane { border-radius: 0 0 22px 22px; }
+      .quick { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .pdfFrame { min-height: 560px; }
+    }
+    /* Final cockpit pass: one-piece aviation console */
+    body {
+      color: #edf7ff;
+      background:
+        linear-gradient(118deg, rgba(13, 18, 23, .98), rgba(24, 32, 40, .94) 36%, rgba(55, 68, 78, .82) 58%, rgba(205, 213, 220, .92) 100%),
+        radial-gradient(circle at 14% 18%, rgba(176, 193, 207, .24), transparent 25%),
+        radial-gradient(circle at 86% 14%, rgba(255, 200, 87, .10), transparent 23%),
+        #111820;
+      overflow: hidden;
+    }
+    .app {
+      grid-template-columns: clamp(282px, 16vw, 310px) clamp(318px, 18vw, 350px) minmax(430px, 1fr) clamp(318px, 18vw, 350px);
+      gap: 0;
+      max-width: 1920px;
+      margin: 0 auto;
+      isolation: isolate;
+      height: 100vh;
+      overflow: hidden;
+    }
+    aside,
+    .pane {
+      padding: clamp(10px, .85vw, 16px);
+      gap: clamp(7px, .62vw, 11px);
+    }
+    .app::before {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      z-index: 0;
+      border: 1px solid rgba(206, 217, 225, .12);
+      border-radius: 28px;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.045), transparent 120px);
+      box-shadow: 0 26px 80px rgba(0, 12, 28, .34);
+    }
+    .app::after {
+      content: "";
+      position: absolute;
+      top: 27px;
+      left: 352px;
+      right: 402px;
+      z-index: 0;
+      color: rgba(210, 235, 255, .24);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: .22em;
+      white-space: nowrap;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    aside,
+    .pane,
+    .assistantPane {
+      min-height: 0;
+      height: calc(100vh - 28px);
+      overflow: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(123, 192, 255, .38) rgba(255,255,255,.05);
+    }
+    aside::-webkit-scrollbar,
+    .pane::-webkit-scrollbar,
+    .assistantPane::-webkit-scrollbar,
+    .chatWindow::-webkit-scrollbar {
+      width: 8px;
+    }
+    aside::-webkit-scrollbar-thumb,
+    .pane::-webkit-scrollbar-thumb,
+    .assistantPane::-webkit-scrollbar-thumb,
+    .chatWindow::-webkit-scrollbar-thumb {
+      background: rgba(123, 192, 255, .38);
+      border-radius: 999px;
+    }
+    aside::-webkit-scrollbar-track,
+    .pane::-webkit-scrollbar-track,
+    .assistantPane::-webkit-scrollbar-track,
+    .chatWindow::-webkit-scrollbar-track {
+      background: rgba(255,255,255,.05);
+    }
+    aside {
+      border-radius: 28px 0 0 28px;
+      border-color: rgba(206, 217, 225, .16);
+      background:
+        radial-gradient(circle at 18% 10%, rgba(190, 206, 218, .18), transparent 30%),
+        linear-gradient(180deg, rgba(20, 28, 36, .98), rgba(28, 39, 48, .95));
+      scrollbar-width: none;
+    }
+    aside::before {
+      content: none !important;
+      display: none !important;
+    }
+    aside::-webkit-scrollbar {
+      display: none;
+    }
+    aside::after {
+      content: "";
+      position: absolute;
+      left: 27px;
+      right: 27px;
+      bottom: 18px;
+      height: 42px;
+      pointer-events: none;
+      opacity: .18;
+      background:
+        radial-gradient(circle, rgba(255, 217, 128, .95) 0 2px, transparent 3px) 0 22px / 28px 14px repeat-x,
+        linear-gradient(90deg, transparent, rgba(123, 192, 255, .18), transparent),
+        linear-gradient(115deg, transparent 48%, rgba(255,255,255,.18) 49%, rgba(255,255,255,.18) 51%, transparent 52%);
+    }
+    .pane {
+      color: #edf7ff;
+      border-color: rgba(206, 217, 225, .13);
+      background:
+        linear-gradient(180deg, rgba(30, 41, 50, .86), rgba(24, 34, 42, .78));
+    }
+    .viewerPane {
+      background:
+        radial-gradient(circle at 65% 8%, rgba(170, 187, 201, .16), transparent 28%),
+        linear-gradient(180deg, rgba(43, 54, 64, .72), rgba(215, 222, 228, .9) 34%, rgba(221, 228, 234, .95));
+    }
+    .assistantPane {
+      border-radius: 0 28px 28px 0;
+    }
+    .pane h2,
+    .pane h3,
+    .viewerTop h2 {
+      color: #f5fbff;
+      text-shadow: 0 8px 24px rgba(0, 0, 0, .18);
+    }
+    h1 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: clamp(21px, 1.42vw, 25px);
+    }
+    h1::before {
+      content: "";
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 12px;
+      color: #071827;
+      font-size: 18px;
+      background: url("/tr-approach-chart-finder.ico") center / cover no-repeat;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.28),
+        0 12px 28px rgba(47, 156, 240, .26);
+    }
+    label {
+      margin-bottom: 5px;
+      font-size: 11px;
+    }
+    .sub {
+      font-size: 13px;
+      line-height: 1.34;
+      margin-top: 5px;
+    }
+    .viewerPane h2,
+    .viewerPane h3 {
+      color: #102236;
+      text-shadow: none;
+    }
+    .status,
+    .muted,
+    .pane .status,
+    .pane .muted {
+      color: rgba(224, 240, 252, .78);
+    }
+    .viewerPane .status,
+    .viewerPane .muted,
+    .viewerPane .chartMeta {
+      color: #5a6d7e;
+    }
+    .card,
+    .chartList,
+    .viewerTop,
+    .empty,
+    .assistantPane .card,
+    .assistantPane .chatWindow,
+    .control,
+    .mapBox,
+    .quickDeck,
+    .coverage,
+    .note {
+      border-radius: 18px;
+      border: 1px solid rgba(206, 217, 225, .14);
+      background:
+        linear-gradient(180deg, rgba(236,242,247,.085), rgba(225,233,239,.04));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 12px 32px rgba(0, 12, 28, .10);
+      transition: background .18s ease, border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+    }
+    .control,
+    .mapBox,
+    .card,
+    .viewerTop {
+      padding: clamp(7px, .58vw, 11px);
+    }
+    .card {
+      color: #edf7ff;
+    }
+    .card strong,
+    .airportInfoCard strong {
+      color: #fff;
+    }
+    #airportCard {
+      background:
+        linear-gradient(135deg, rgba(45, 156, 255, .18), rgba(255,255,255,.06));
+    }
+    .icao {
+      color: #ffffff;
+      text-shadow: 0 10px 28px rgba(47, 156, 240, .3);
+    }
+    .chartList {
+      background: rgba(18, 27, 35, .42);
+      overflow: hidden;
+    }
+    .chartButton {
+      color: #edf7ff;
+      background: rgba(232, 238, 243, .045);
+      border-bottom-color: rgba(206, 217, 225, .11);
+      transition: background .16s ease, color .16s ease, transform .16s ease, box-shadow .16s ease;
+    }
+    .chartButton:hover {
+      color: #ffffff;
+      background: rgba(64, 170, 255, .13);
+      transform: translateX(2px);
+    }
+    .chartButton.active {
+      color: #071827;
+      background:
+        linear-gradient(90deg, rgba(255, 200, 87, .96), rgba(232, 244, 255, .94));
+      box-shadow: inset 5px 0 0 #ffffff;
+    }
+    .chartButton.active .chartMeta {
+      color: #39576e;
+    }
+    .tag {
+      color: #082015;
+      background: linear-gradient(135deg, #c7ffd9, #38d48a);
+    }
+    .viewerTop {
+      color: #102236;
+      background:
+        linear-gradient(135deg, rgba(231, 236, 240, .94), rgba(199, 209, 217, .86));
+      border-color: rgba(70, 82, 94, .18);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.52),
+        0 14px 34px rgba(0, 12, 24, .12);
+    }
+    .pdfFrame {
+      border: 1px solid rgba(63, 76, 88, .34);
+      border-radius: 22px;
+      background:
+        linear-gradient(180deg, rgba(24, 29, 34, .96), rgba(35, 40, 45, .96));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.10),
+        0 20px 54px rgba(0, 12, 28, .20);
+      min-height: 0;
+      height: 100%;
+      flex: 1 1 auto;
+    }
+    .empty {
+      color: #526577;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.9), rgba(230, 241, 249, .8));
+      border-color: rgba(14, 45, 72, .17);
+    }
+    input,
+    select,
+    textarea {
+      min-height: 38px;
+      padding: 9px 12px;
+      border-radius: 16px;
+      border-color: rgba(183, 220, 250, .2);
+      background: rgba(245, 250, 255, .96);
+      color: #0a1d2d;
+    }
+    .turkeyMap {
+      height: clamp(210px, 28vh, 310px);
+    }
+    .quickDeck {
+      display: none;
+    }
+    .quickDeck label {
+      margin-bottom: 6px;
+      color: rgba(230, 238, 245, .86);
+      text-transform: none;
+      letter-spacing: .035em;
+    }
+    .scanActions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .primary {
+      min-height: 38px;
+      padding: 7px 10px;
+      font-size: 12px;
+      line-height: 1.15;
+    }
+    .quick {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 3px;
+      padding: 4px;
+      border-radius: 14px;
+      border: 1px solid rgba(206, 217, 225, .10);
+      background: rgba(9, 14, 19, .20);
+    }
+    .quick button {
+      min-height: 29px;
+      padding: 5px 7px;
+      border-radius: 10px;
+      border-color: rgba(206, 217, 225, .08);
+      background:
+        linear-gradient(180deg, rgba(231, 237, 242, .12), rgba(231, 237, 242, .035));
+      box-shadow: none;
+      color: rgba(243, 248, 252, .94);
+      font-size: 11px;
+      letter-spacing: .02em;
+    }
+    .quick button:hover {
+      transform: none;
+      border-color: rgba(220, 231, 239, .22);
+      background:
+        linear-gradient(180deg, rgba(231, 237, 242, .18), rgba(231, 237, 242, .07));
+    }
+    .runwayButtons {
+      margin-top: 6px;
+      gap: 5px !important;
+    }
+    .runwayButtons button {
+      min-height: 28px;
+      padding: 5px 8px;
+      font-size: 12px;
+    }
+    .coverage {
+      max-height: 56px;
+      padding: 7px 9px;
+      font-size: 11px;
+      overflow: hidden;
+    }
+    .note {
+      font-size: 11px;
+      line-height: 1.28;
+      padding: 7px 9px;
+      max-height: 46px;
+      overflow: hidden;
+    }
+    @media (max-height: 820px) {
+      h1::before {
+        width: 28px;
+        height: 28px;
+        flex-basis: 28px;
+      }
+      h1 {
+        font-size: 20px;
+      }
+      .sub {
+        display: none;
+      }
+      .turkeyMap {
+        height: clamp(150px, 22vh, 190px);
+      }
+      .control,
+      .mapBox,
+      .quickDeck,
+      .card,
+      .viewerTop {
+        padding: 7px;
+      }
+      .coverage {
+        max-height: 28px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .note {
+        display: none;
+      }
+    }
+    @media (max-height: 740px) {
+      aside,
+      .pane {
+        padding-top: 8px;
+        padding-bottom: 8px;
+        gap: 6px;
+      }
+      .langSwitch {
+        padding: 3px;
+      }
+      .langSwitch button {
+        min-height: 32px;
+        padding: 5px 8px;
+      }
+      input,
+      select,
+      textarea {
+        min-height: 34px;
+        padding: 7px 10px;
+      }
+      label {
+        margin-bottom: 4px;
+        font-size: 10px;
+      }
+      .turkeyMap {
+        height: 152px;
+      }
+      .quickDeck {
+        display: none;
+      }
+      .quickDeck label {
+        margin: 0;
+        white-space: nowrap;
+        font-size: 10px;
+      }
+      .quick {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        padding: 3px;
+      }
+      .quick button {
+        min-height: 24px;
+        padding: 4px 5px;
+        font-size: 10px;
+      }
+    }
+    @media (max-width: 1400px) {
+      .app {
+        grid-template-columns: 268px 300px minmax(340px, 1fr) 292px;
+      }
+      .assistantPane {
+        grid-column: auto;
+        border-radius: 0 28px 28px 0;
+      }
+    }
+    @media (max-width: 1180px) {
+      body {
+        overflow: auto;
+      }
+      .app {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+        grid-template-columns: 1fr;
+      }
+      aside,
+      .pane,
+      .assistantPane {
+        height: auto;
+        overflow: visible;
+        border-left: 1px solid var(--glass-line);
+      }
+      aside {
+        border-radius: 24px 24px 0 0;
+      }
+      .assistantPane {
+        border-radius: 0 0 24px 24px;
+      }
+      .pdfFrame {
+        min-height: 620px;
+      }
+    }
+    .chatWindow {
+      min-height: 220px;
+      max-height: min(42vh, 440px);
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+    }
+    .chatMessage {
+      max-width: 100%;
+    }
+    .chatMessage.ai,
+    .chatMessage.user {
+      overflow-wrap: break-word;
+      word-break: normal;
+      hyphens: auto;
+    }
+    .composerRow {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .composerRow .askBtn {
+      justify-self: end;
+      width: min(160px, 100%);
+    }
+    .chatMessage.ai {
+      background:
+        linear-gradient(180deg, rgba(191,227,255,.13), rgba(191,227,255,.075));
+      border-color: rgba(191,227,255,.22);
+    }
+    .chatMessage.user {
+      background: linear-gradient(135deg, #0d65b5, #2f9cf0);
+      border-color: rgba(151, 212, 255, .6);
+      box-shadow: 0 12px 28px rgba(20, 94, 168, .24);
+    }
+    .analysisItem {
+      background:
+        linear-gradient(180deg, rgba(191,227,255,.12), rgba(191,227,255,.065));
+    }
+    .analysisItem strong {
+      color: #ffe7ad;
+      white-space: normal;
+    }
+    .analysisSource {
+      white-space: normal;
+    }
+    .download,
+    .primary,
+    .askBtn {
+      background:
+        linear-gradient(135deg, #526879, #7e95a7);
+      border: 1px solid rgba(220, 231, 239, .34);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.18),
+        0 12px 26px rgba(0, 10, 20, .18);
+    }
+    .download {
+      min-height: 40px;
+      padding: 9px 18px;
+      border-radius: 16px;
+      color: #f7fbff;
+      letter-spacing: .01em;
+      background:
+        linear-gradient(135deg, rgba(55, 66, 76, .96), rgba(112, 127, 139, .92));
+      border-color: rgba(235, 241, 246, .32);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.20),
+        inset 0 -1px 0 rgba(0,0,0,.18),
+        0 12px 24px rgba(0, 12, 24, .18);
+    }
+    .download:hover {
+      background:
+        linear-gradient(135deg, rgba(67, 78, 88, .98), rgba(126, 140, 152, .96));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.24),
+        0 16px 30px rgba(0, 12, 24, .22);
+    }
+    .viewerPane .viewerTop {
+      position: relative;
+      overflow: hidden;
+      align-items: center;
+      min-height: 78px;
+      padding: 13px 15px;
+      color: #f6fbff;
+      border-radius: 22px;
+      border-color: rgba(220, 230, 238, .18);
+      background:
+        radial-gradient(circle at 86% 18%, rgba(255, 213, 128, .14), transparent 30%),
+        linear-gradient(135deg, rgba(18, 24, 30, .98), rgba(42, 52, 61, .94));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.12),
+        inset 4px 0 0 rgba(255, 200, 87, .92),
+        0 16px 38px rgba(0, 12, 24, .18);
+    }
+    .viewerPane .viewerTop > div {
+      min-width: 0;
+    }
+    .viewerPane .viewerTop h2 {
+      color: #f9fcff;
+      font-size: clamp(22px, 1.5vw, 30px);
+      line-height: 1.02;
+      letter-spacing: -.055em;
+      text-shadow: 0 10px 28px rgba(0, 0, 0, .24);
+    }
+    .viewerPane .viewerTop .status {
+      max-width: min(58vw, 760px);
+      margin-top: 5px;
+      overflow: hidden;
+      color: rgba(226, 236, 244, .74);
+      font-size: 13px;
+      line-height: 1.25;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .viewerPane .viewerTop .download {
+      min-height: 38px;
+      padding: 9px 17px;
+      border-radius: 13px;
+      color: #171511;
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: .065em;
+      font-size: 11px;
+      background:
+        linear-gradient(135deg, #ffe1a0, #c79b43 48%, #7a5f2c);
+      border-color: rgba(255, 233, 174, .58);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.36),
+        inset 0 -1px 0 rgba(72, 50, 13, .28),
+        0 12px 24px rgba(0, 12, 24, .24);
+    }
+    .viewerPane .viewerTop .download:hover {
+      transform: translateY(-1px);
+      background:
+        linear-gradient(135deg, #ffebb8, #d7ab52 48%, #8b6b31);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.42),
+        0 16px 30px rgba(0, 12, 24, .30);
+    }
+    button:active,
+    .download:active {
+      transform: translateY(1px) scale(.99);
+    }
+    @keyframes softRise {
+      from {
+        opacity: 0;
+        transform: translateY(7px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes runwayPulse {
+      0%, 100% {
+        opacity: .36;
+        filter: drop-shadow(0 0 0 rgba(255, 200, 87, 0));
+      }
+      50% {
+        opacity: .72;
+        filter: drop-shadow(0 0 8px rgba(255, 200, 87, .28));
+      }
+    }
+    .card,
+    .chartList,
+    .viewerTop,
+    .empty,
+    .chatWindow {
+      animation: softRise .22s ease both;
+    }
+    .chatMessage {
+      animation: softRise .18s ease both;
+    }
+    aside::after {
+      animation: runwayPulse 3.8s ease-in-out infinite;
+    }
+    .download::before,
+    .primary::before,
+    .askBtn::before {
+      content: "";
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+    body::before {
+      opacity: .16;
+    }
+    body::after,
+    .app::after,
+    .assistantPane::before {
+      content: none !important;
+      display: none !important;
+    }
+    @media (max-width: 1280px) {
+      .app {
+        grid-template-columns: 268px 300px minmax(340px, 1fr) 292px;
+        overflow: hidden;
+        height: 100vh;
+        min-height: 100vh;
+      }
+      .app::after {
+        left: 340px;
+        right: 26px;
+      }
+      .assistantPane {
+        grid-column: auto;
+        border-radius: 0 28px 28px 0;
+        min-height: 0;
+        height: calc(100vh - 28px);
+      }
+      aside {
+        border-radius: 28px 0 0 28px;
+      }
+    }
+    @media (max-width: 1180px) {
+      body {
+        overflow: auto;
+      }
+      .app {
+        grid-template-columns: 1fr;
+        overflow: visible;
+        height: auto;
+        min-height: 100vh;
+      }
+      .assistantPane {
+        border-radius: 0 0 28px 28px;
+        height: auto;
+      }
+      aside {
+        border-radius: 28px 28px 0 0;
+      }
+    }
+    @media (max-width: 920px) {
+      body {
+        overflow: auto;
+      }
+      .app::before,
+      .app::after {
+        display: none;
+      }
+      aside,
+      .pane,
+      .assistantPane {
+        min-height: auto;
+        height: auto;
+      }
+    }
+    /* Final cockpit polish: one-piece premium surface, not stacked windows */
+    body {
+      background:
+        radial-gradient(circle at 20% 8%, rgba(110, 145, 166, .24), transparent 28%),
+        radial-gradient(circle at 76% 18%, rgba(214, 175, 92, .10), transparent 28%),
+        linear-gradient(135deg, #141d24 0%, #202a31 46%, #151d23 100%);
+      overflow: hidden;
+    }
+    .app {
+      height: 100vh;
+      min-height: 100vh;
+      padding: 0;
+      gap: 0;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.035), rgba(255,255,255,.015) 42%, rgba(255,255,255,.028)),
+        linear-gradient(135deg, rgba(34, 49, 58, .96), rgba(15, 28, 37, .98));
+      border: 0;
+      border-radius: 0;
+      overflow: hidden;
+    }
+    body::before,
+    body::after,
+    .app::before,
+    .app::after,
+    .assistantPane::before {
+      content: none !important;
+      display: none !important;
+    }
+    aside,
+    .pane,
+    .assistantPane {
+      height: 100vh !important;
+      min-height: 0;
+      border-radius: 0 !important;
+      border-left: 0 !important;
+      border-right: 1px solid rgba(210, 226, 237, .12);
+      background: transparent;
+      box-shadow: none;
+    }
+    aside {
+      background:
+        linear-gradient(180deg, rgba(18, 32, 42, .78), rgba(16, 29, 38, .92));
+    }
+    .viewerPane {
+      background:
+        linear-gradient(180deg, rgba(225, 235, 241, .88), rgba(195, 210, 220, .76));
+      border-right-color: rgba(10, 20, 28, .26);
+    }
+    .assistantPane {
+      background:
+        linear-gradient(180deg, rgba(24, 38, 48, .72), rgba(19, 32, 42, .88));
+      border-right: 0;
+    }
+    .control,
+    .mapBox,
+    .card,
+    .chartList,
+    .viewerTop,
+    .chatWindow,
+    .empty,
+    .analysisItem,
+    .chartButton {
+      box-shadow: none !important;
+    }
+    .control,
+    .mapBox,
+    .card,
+    .chartList,
+    .chatWindow,
+    .analysisItem {
+      border-color: rgba(221, 234, 242, .16) !important;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.035)) !important;
+    }
+    .viewerTop {
+      border-color: rgba(15, 28, 38, .18) !important;
+      background:
+        linear-gradient(135deg, rgba(22, 32, 40, .93), rgba(65, 78, 84, .76)) !important;
+      color: #f6fbff;
+    }
+    .viewerTop .status {
+      color: rgba(239, 247, 255, .78);
+    }
+    .chatWindow {
+      min-height: 158px;
+      max-height: clamp(170px, 27vh, 285px);
+      overflow-y: auto;
+      flex: 0 0 auto;
+    }
+    .chatComposer {
+      position: sticky;
+      top: 10px;
+      z-index: 5;
+      backdrop-filter: blur(14px);
+    }
+    .analysisPanel {
+      margin-top: 2px;
+    }
+    .analysisStatus,
+    .analysisSource {
+      display: none !important;
+    }
+    @media (max-width: 1280px) {
+      .app {
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+      }
+      body {
+        overflow: auto;
+      }
+    }
+
+    /* Unified product skin: one continuous cockpit, fewer floating windows */
+    body {
+      background: #172028 !important;
+      color: #eef5fa;
+    }
+    .app {
+      max-width: none !important;
+      width: 100vw;
+      margin: 0 !important;
+      grid-template-columns: clamp(300px, 16.8vw, 322px) clamp(330px, 18.8vw, 372px) minmax(560px, 1fr) clamp(330px, 18vw, 370px);
+      background:
+        linear-gradient(90deg,
+          #13202a 0%,
+          #1d2b34 17%,
+          #25323a 36%,
+          #2b353a 64%,
+          #1e2c35 82%,
+          #15232c 100%) !important;
+    }
+    aside,
+    .pane,
+    .assistantPane,
+    .viewerPane {
+      background: transparent !important;
+      border-radius: 0 !important;
+      border-right: 1px solid rgba(225, 235, 242, .10) !important;
+    }
+    .assistantPane {
+      border-right: 0 !important;
+    }
+    aside,
+    .pane {
+      padding: 14px 16px;
+    }
+    .control,
+    .mapBox,
+    .card,
+    .chartList,
+    .chatWindow,
+    .analysisItem,
+    .empty {
+      border-radius: 16px !important;
+      border: 1px solid rgba(228, 239, 246, .12) !important;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.022)) !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.055) !important;
+    }
+    .viewerTop {
+      border: 0 !important;
+      border-bottom: 1px solid rgba(230, 238, 244, .12) !important;
+      border-radius: 0 !important;
+      padding: 10px 2px 14px !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      color: #f4f8fb !important;
+    }
+    .viewerTop h2 {
+      color: #f7fbff !important;
+    }
+    .viewerTop .status {
+      color: #b9c7d0 !important;
+    }
+    .pdfFrame {
+      border: 0 !important;
+      border-radius: 18px !important;
+      background: #222 !important;
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.08),
+        0 18px 42px rgba(0,0,0,.18) !important;
+    }
+    .chartButton {
+      background: transparent !important;
+      border-bottom: 1px solid rgba(228, 239, 246, .10) !important;
+      color: #f2f7fb !important;
+    }
+    .chartButton:hover {
+      background: rgba(255,255,255,.06) !important;
+    }
+    .chartButton.active {
+      background:
+        linear-gradient(90deg, rgba(240, 190, 82, .96), rgba(255,255,255,.82)) !important;
+      color: #101820 !important;
+      box-shadow: inset 3px 0 0 rgba(255,255,255,.75) !important;
+    }
+    .chartButton.active .chartMeta {
+      color: rgba(10, 22, 32, .72) !important;
+    }
+    .tag {
+      background: rgba(122, 244, 177, .88) !important;
+      color: #062516 !important;
+    }
+    .download,
+    .primary,
+    .askBtn {
+      border-radius: 14px !important;
+      background:
+        linear-gradient(135deg, #ead184, #9f7722) !important;
+      border: 1px solid rgba(255, 239, 180, .48) !important;
+      color: #11171b !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.25) !important;
+      text-shadow: none !important;
+    }
+    .chatComposer {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.075), rgba(255,255,255,.04)) !important;
+    }
+    #question,
+    input,
+    select,
+    textarea {
+      border-radius: 14px !important;
+    }
+    .analysisStatus,
+    .analysisSource {
+      display: none !important;
+    }
+
+    /* Seamless layer: remove hard separators and keep the center in the cockpit skin */
+    .app {
+      background:
+        radial-gradient(circle at 8% 18%, rgba(120, 148, 162, .18), transparent 24%),
+        radial-gradient(circle at 72% 10%, rgba(238, 204, 128, .08), transparent 22%),
+        linear-gradient(90deg,
+          #14212a 0%,
+          #192833 19%,
+          #22313a 35%,
+          #26333a 66%,
+          #1b2b35 84%,
+          #14232d 100%) !important;
+    }
+    aside,
+    .pane,
+    .assistantPane,
+    .viewerPane {
+      border: 0 !important;
+      border-left: 0 !important;
+      border-right: 0 !important;
+    }
+    .pane {
+      position: relative;
+    }
+    .pane::after,
+    aside::before,
+    aside::after,
+    .viewerPane::before,
+    .viewerPane::after {
+      content: none !important;
+      display: none !important;
+    }
+    .viewerPane {
+      background:
+        linear-gradient(180deg, rgba(25, 42, 52, .96), rgba(20, 34, 43, .98)) !important;
+      color: #eef5fa !important;
+    }
+    .viewerPane::selection {
+      background: rgba(197, 151, 45, .3);
+    }
+    .viewerPane .viewerTop {
+      border-bottom: 0 !important;
+      color: #eef5fa !important;
+    }
+    .viewerPane .viewerTop h2 {
+      color: #f7fbff !important;
+      text-shadow: 0 1px 0 rgba(0,0,0,.22) !important;
+    }
+    .viewerPane .viewerTop .status {
+      color: #b9c7d0 !important;
+      text-shadow: none !important;
+    }
+    .pdfFrame {
+      background: #fbfaf5 !important;
+      border-radius: 14px !important;
+      box-shadow:
+        0 0 0 1px rgba(28, 38, 44, .10),
+        0 20px 46px rgba(15, 23, 29, .20) !important;
+    }
+    .pdfStage {
+      flex: 1;
+      min-height: min(690px, calc(100vh - 140px));
+      overflow: hidden;
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      gap: 18px;
+      padding: 10px;
+      border-radius: 0;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012)) !important;
+      box-shadow: none !important;
+    }
+    .pdfStage[hidden] {
+      display: none !important;
+    }
+    .pdfCanvas {
+      display: block;
+      max-width: 100%;
+      height: auto;
+      background: #fff;
+      border-radius: 2px;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.10),
+        0 14px 34px rgba(0,0,0,.24);
+    }
+    .pdfLoading {
+      align-self: center;
+      justify-self: center;
+      color: #566773;
+      font-weight: 850;
+    }
+    .empty {
+      background: rgba(251, 250, 245, .86) !important;
+      color: #50616c !important;
+      border-color: rgba(32, 48, 58, .12) !important;
+    }
+    .app > aside,
+    .app > section {
+      border-inline: 0 !important;
+      outline: 0 !important;
+    }
+    .app > * + * {
+      box-shadow:
+        inset 1px 0 0 rgba(255,255,255,.018) !important;
+    }
+    .viewerTop,
+    .viewerTop::before,
+    .viewerTop::after {
+      border: 0 !important;
+      outline: 0 !important;
+    }
+    .viewerTools {
+      display: inline-flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .zoomTools {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px;
+      border: 1px solid rgba(238, 246, 252, .12);
+      border-radius: 14px;
+      background: rgba(255,255,255,.045);
+    }
+    .zoomTools[hidden] {
+      display: none !important;
+    }
+    .zoomBtn {
+      min-width: 34px;
+      min-height: 32px;
+      padding: 6px 10px;
+      border-radius: 10px !important;
+      border: 1px solid rgba(255,255,255,.14) !important;
+      background: rgba(255,255,255,.08) !important;
+      color: #f7fbff !important;
+      font-size: 14px;
+      font-weight: 950;
+      box-shadow: none !important;
+    }
+    .zoomBtn:hover {
+      background: rgba(255,255,255,.14) !important;
+    }
+    .zoomBtn:disabled {
+      cursor: default;
+      opacity: .42;
+      transform: none !important;
+    }
+    .fitBtn {
+      min-width: 46px;
+      color: #ead184 !important;
+    }
+    .pdfStage.zoomed {
+      overflow: auto;
+      align-content: start;
+      justify-items: center;
+    }
+
+    /* Sunset night flight theme: dusk horizon, cockpit glass, runway lights */
+    :root {
+      --bg: #0b1220;
+      --panel: rgba(17, 27, 41, .72);
+      --ink: #f5f8ff;
+      --muted: #b7c6d5;
+      --line: rgba(255, 220, 160, .13);
+      --blue: #2f9cff;
+      --green: #7cf0b2;
+      --amber: #d49a31;
+      --red: #ff6c6c;
+      --shadow: 0 22px 54px rgba(3, 8, 18, .32);
+    }
+
+    body {
+      position: relative;
+      background:
+        radial-gradient(circle at 50% 118%, rgba(255, 184, 76, .30), transparent 35%),
+        radial-gradient(circle at 18% 82%, rgba(255, 118, 83, .20), transparent 28%),
+        radial-gradient(circle at 82% 16%, rgba(93, 126, 255, .13), transparent 30%),
+        linear-gradient(180deg, #070b18 0%, #0d1830 36%, #1b2037 58%, #281b28 75%, #422515 100%) !important;
+    }
+
+    body::before {
+      content: "" !important;
+      display: block !important;
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        linear-gradient(115deg, transparent 0 43%, rgba(255, 214, 129, .10) 43.4%, transparent 44.2% 100%),
+        linear-gradient(65deg, transparent 0 48%, rgba(105, 163, 255, .08) 48.4%, transparent 49.2% 100%),
+        radial-gradient(ellipse at 50% 88%, rgba(255, 190, 92, .30), transparent 20%),
+        linear-gradient(180deg, transparent 0 63%, rgba(255, 164, 71, .12) 64%, transparent 76%);
+      opacity: .92;
+    }
+
+    body::after {
+      content: "" !important;
+      display: block !important;
+      position: fixed;
+      left: 3vw;
+      right: 3vw;
+      bottom: 22px;
+      height: 86px;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(circle, rgba(255, 212, 117, .82) 0 2px, transparent 3px) 0 62px / 58px 18px repeat-x,
+        radial-gradient(circle, rgba(93, 188, 255, .55) 0 2px, transparent 3px) 28px 38px / 70px 18px repeat-x,
+        linear-gradient(92deg, transparent 0 45%, rgba(255,255,255,.12) 45.3% 45.6%, transparent 46% 54%, rgba(255,255,255,.12) 54.3% 54.6%, transparent 55% 100%);
+      filter: blur(.1px);
+      opacity: .34;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      background:
+        linear-gradient(90deg,
+          rgba(6, 12, 26, .78) 0%,
+          rgba(12, 24, 43, .74) 18%,
+          rgba(19, 29, 47, .70) 36%,
+          rgba(29, 34, 52, .62) 58%,
+          rgba(20, 30, 47, .72) 82%,
+          rgba(8, 16, 31, .82) 100%) !important;
+      backdrop-filter: blur(8px) saturate(1.1);
+    }
+
+    aside,
+    .pane,
+    .assistantPane,
+    .viewerPane {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.040), rgba(255,255,255,.014)) !important;
+    }
+
+    .app > * + * {
+      box-shadow: inset 1px 0 0 rgba(255, 222, 170, .045) !important;
+    }
+
+    .control,
+    .mapBox,
+    .card,
+    .chartList,
+    .chatWindow,
+    .analysisItem,
+    .empty {
+      border-color: rgba(255, 226, 178, .16) !important;
+      background:
+        linear-gradient(180deg, rgba(25, 39, 59, .74), rgba(9, 18, 33, .56)) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 20px 42px rgba(2, 8, 20, .18) !important;
+      backdrop-filter: blur(14px) saturate(1.12);
+    }
+
+    .viewerPane {
+      background:
+        radial-gradient(circle at 50% 100%, rgba(222, 139, 55, .13), transparent 34%),
+        linear-gradient(180deg, rgba(15, 27, 47, .76), rgba(9, 17, 31, .84)) !important;
+    }
+
+    .viewerTop {
+      background:
+        linear-gradient(135deg, rgba(28, 42, 63, .72), rgba(9, 18, 34, .48)) !important;
+      border-bottom: 1px solid rgba(255, 223, 171, .11) !important;
+      border-radius: 20px !important;
+      padding: 14px 16px !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.08),
+        0 18px 40px rgba(0,0,0,.16) !important;
+    }
+
+    .viewerTop h2,
+    h1,
+    h2,
+    h3,
+    label {
+      text-shadow: 0 2px 12px rgba(0,0,0,.28) !important;
+    }
+
+    .sub,
+    .muted,
+    .status,
+    .chartMeta,
+    .viewerTop .status,
+    .assistantPane .status {
+      color: rgba(221, 232, 243, .78) !important;
+    }
+
+    input,
+    select,
+    textarea {
+      background: rgba(239, 246, 252, .94) !important;
+      border-color: rgba(255, 226, 178, .28) !important;
+      color: #111827 !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.72) !important;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(255, 194, 91, .86) !important;
+      box-shadow:
+        0 0 0 3px rgba(255, 174, 66, .20),
+        0 0 24px rgba(255, 156, 79, .18) !important;
+    }
+
+    button,
+    .quick button,
+    .runwayButtons button {
+      border-color: rgba(255, 224, 175, .20) !important;
+      background:
+        linear-gradient(180deg, rgba(41, 58, 81, .76), rgba(17, 28, 45, .84)) !important;
+      color: #f6f9ff !important;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08) !important;
+    }
+
+    button:hover,
+    .quick button:hover,
+    .runwayButtons button:hover {
+      border-color: rgba(255, 203, 119, .42) !important;
+      background:
+        linear-gradient(180deg, rgba(58, 76, 101, .82), rgba(23, 37, 58, .88)) !important;
+    }
+
+    .download,
+    .primary,
+    .askBtn,
+    .chartButton.active,
+    .langSwitch button.active,
+    .runwayButtons button.active {
+      background:
+        linear-gradient(135deg, #ffe29a 0%, #e7ad47 46%, #9b641d 100%) !important;
+      border-color: rgba(255, 235, 179, .62) !important;
+      color: #14100a !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.35),
+        0 10px 28px rgba(210, 135, 37, .20) !important;
+    }
+
+    .download:hover,
+    .primary:hover,
+    .askBtn:hover {
+      filter: brightness(1.04);
+    }
+
+    .chartButton {
+      background:
+        linear-gradient(90deg, rgba(22, 35, 52, .70), rgba(9, 18, 31, .40)) !important;
+      border-bottom-color: rgba(255, 224, 175, .10) !important;
+    }
+
+    .chartButton.active .chartTitle,
+    .chartButton.active .chartMeta {
+      color: #12100b !important;
+    }
+
+    .tag {
+      background: rgba(132, 246, 187, .92) !important;
+      color: #062114 !important;
+    }
+
+    .turkeyMap {
+      border: 1px solid rgba(255, 224, 175, .20);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+      filter: saturate(.92) contrast(.98) brightness(.93);
+    }
+
+    .pdfStage {
+      background:
+        radial-gradient(circle at 50% 104%, rgba(234, 160, 74, .16), transparent 28%),
+        linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012)) !important;
+    }
+
+    .pdfCanvas {
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.16),
+        0 28px 68px rgba(0,0,0,.34),
+        0 0 70px rgba(255, 180, 94, .08) !important;
+    }
+
+    .chatMessage.ai {
+      background:
+        linear-gradient(180deg, rgba(53, 72, 95, .80), rgba(24, 38, 58, .86)) !important;
+      border-color: rgba(255, 226, 178, .15) !important;
+    }
+
+    .chatMessage.user {
+      background:
+        linear-gradient(135deg, #238ee7 0%, #1565b5 100%) !important;
+      border-color: rgba(151, 216, 255, .42) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.18),
+        0 10px 28px rgba(32, 139, 231, .18) !important;
+    }
+
+    .chatMeta {
+      color: rgba(238, 246, 255, .72) !important;
+    }
+
+    .zoomTools {
+      border-color: rgba(255, 225, 175, .18) !important;
+      background: rgba(255, 214, 143, .065) !important;
+    }
+
+    .fitBtn {
+      color: #ffe29a !important;
+    }
+
+    /* Twilight approach pass: blue/purple sunset sky, softer rose-gold accents */
+    :root {
+      --bg: #10183a;
+      --panel: rgba(24, 34, 76, .58);
+      --ink: #fff8f2;
+      --muted: #d7d7ef;
+      --line: rgba(255, 210, 210, .18);
+      --blue: #6d8dff;
+      --green: #9ef0c8;
+      --amber: #f2a45f;
+      --red: #ff7f8d;
+      --shadow: 0 24px 70px rgba(20, 18, 56, .36);
+    }
+
+    body {
+      background:
+        radial-gradient(ellipse at 17% 23%, rgba(123, 118, 219, .42), transparent 31%),
+        radial-gradient(ellipse at 48% 42%, rgba(234, 151, 192, .34), transparent 33%),
+        radial-gradient(ellipse at 31% 67%, rgba(255, 150, 92, .28), transparent 24%),
+        radial-gradient(ellipse at 73% 16%, rgba(73, 105, 210, .34), transparent 32%),
+        linear-gradient(180deg, #14256a 0%, #263884 32%, #5a4e9e 55%, #ee8e94 78%, #f7b66a 100%) !important;
+    }
+
+    body::before {
+      content: "" !important;
+      display: block !important;
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 13% 36%, rgba(255,255,255,.16), transparent 22%),
+        radial-gradient(ellipse at 38% 30%, rgba(213, 203, 255, .23), transparent 25%),
+        radial-gradient(ellipse at 55% 52%, rgba(255, 206, 217, .22), transparent 28%),
+        radial-gradient(ellipse at 28% 72%, rgba(255, 176, 112, .21), transparent 24%),
+        linear-gradient(115deg, transparent 0 42%, rgba(255, 245, 230, .10) 48%, transparent 58%),
+        linear-gradient(180deg, rgba(4, 10, 31, .12), rgba(24, 19, 64, .05) 45%, rgba(255, 180, 112, .14));
+      mix-blend-mode: screen;
+      opacity: .92;
+    }
+
+    body::after {
+      content: "" !important;
+      display: block !important;
+      position: fixed;
+      inset: auto 0 0 0;
+      height: 35vh;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 50% 100%, rgba(255, 209, 126, .50), transparent 47%),
+        radial-gradient(ellipse at 18% 82%, rgba(255, 122, 126, .20), transparent 25%),
+        linear-gradient(180deg, transparent, rgba(255, 160, 92, .16));
+      opacity: .78;
+    }
+
+    .app {
+      background:
+        linear-gradient(90deg,
+          rgba(9, 16, 47, .72) 0%,
+          rgba(26, 35, 83, .62) 19%,
+          rgba(38, 45, 96, .54) 37%,
+          rgba(44, 43, 92, .42) 58%,
+          rgba(31, 37, 79, .58) 82%,
+          rgba(10, 18, 49, .74) 100%) !important;
+      backdrop-filter: blur(12px) saturate(1.18);
+    }
+
+    aside,
+    .pane,
+    .assistantPane,
+    .viewerPane {
+      background:
+        linear-gradient(180deg, rgba(19, 29, 72, .42), rgba(11, 18, 45, .58)) !important;
+    }
+
+    .viewerPane {
+      background:
+        radial-gradient(ellipse at 50% 102%, rgba(247, 154, 101, .18), transparent 34%),
+        linear-gradient(180deg, rgba(20, 31, 74, .50), rgba(12, 19, 47, .66)) !important;
+    }
+
+    .control,
+    .mapBox,
+    .card,
+    .chartList,
+    .chatWindow,
+    .analysisItem,
+    .empty,
+    .viewerTop {
+      border-color: rgba(255, 224, 224, .18) !important;
+      background:
+        linear-gradient(180deg, rgba(35, 45, 99, .60), rgba(13, 22, 58, .44)) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.11),
+        0 24px 58px rgba(12, 12, 44, .20) !important;
+      backdrop-filter: blur(18px) saturate(1.18);
+    }
+
+    .viewerTop {
+      background:
+        linear-gradient(135deg, rgba(43, 54, 113, .68), rgba(21, 25, 67, .46)) !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    label,
+    .viewerTop h2 {
+      color: #fff9f4 !important;
+      text-shadow: 0 3px 16px rgba(11, 12, 42, .38) !important;
+    }
+
+    .sub,
+    .muted,
+    .status,
+    .chartMeta,
+    .viewerTop .status,
+    .assistantPane .status {
+      color: rgba(226, 225, 246, .82) !important;
+    }
+
+    .download,
+    .primary,
+    .askBtn,
+    .chartButton.active,
+    .langSwitch button.active,
+    .runwayButtons button.active {
+      background:
+        linear-gradient(135deg, #fff0c9 0%, #f5a66f 43%, #d4668f 100%) !important;
+      border-color: rgba(255, 235, 220, .64) !important;
+      color: #21121a !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.42),
+        0 12px 32px rgba(224, 106, 135, .24) !important;
+    }
+
+    button,
+    .quick button,
+    .runwayButtons button,
+    .zoomBtn {
+      background:
+        linear-gradient(180deg, rgba(55, 68, 132, .62), rgba(22, 31, 80, .62)) !important;
+      border-color: rgba(226, 221, 255, .19) !important;
+      color: #fff8f4 !important;
+    }
+
+    button:hover,
+    .quick button:hover,
+    .runwayButtons button:hover,
+    .zoomBtn:hover {
+      background:
+        linear-gradient(180deg, rgba(75, 90, 160, .70), rgba(31, 43, 103, .68)) !important;
+      border-color: rgba(255, 201, 213, .42) !important;
+    }
+
+    input,
+    select,
+    textarea {
+      background: rgba(252, 244, 247, .94) !important;
+      border-color: rgba(255, 207, 215, .40) !important;
+      color: #171525 !important;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(255, 169, 142, .86) !important;
+      box-shadow:
+        0 0 0 3px rgba(242, 138, 166, .22),
+        0 0 28px rgba(126, 151, 255, .18) !important;
+    }
+
+    .chartButton {
+      background:
+        linear-gradient(90deg, rgba(30, 42, 91, .54), rgba(18, 27, 69, .30)) !important;
+      color: #fff8f4 !important;
+      border-bottom-color: rgba(255, 224, 224, .11) !important;
+    }
+
+    .chartButton:hover {
+      background:
+        linear-gradient(90deg, rgba(46, 58, 124, .62), rgba(29, 39, 91, .42)) !important;
+    }
+
+    .chartButton.active .chartTitle,
+    .chartButton.active .chartMeta {
+      color: #21121a !important;
+    }
+
+    .chatMessage.ai {
+      background:
+        linear-gradient(180deg, rgba(54, 67, 128, .72), rgba(25, 36, 88, .78)) !important;
+      border-color: rgba(255, 224, 224, .18) !important;
+    }
+
+    .chatMessage.user {
+      background:
+        linear-gradient(135deg, #6e8cff 0%, #315fc6 48%, #28408d 100%) !important;
+      border-color: rgba(211, 224, 255, .44) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.18),
+        0 12px 32px rgba(75, 108, 230, .22) !important;
+    }
+
+    .pdfStage {
+      background:
+        radial-gradient(ellipse at 50% 105%, rgba(250, 165, 104, .16), transparent 32%),
+        linear-gradient(180deg, rgba(255, 248, 244, .070), rgba(255,255,255,.020)) !important;
+    }
+
+    .pdfCanvas {
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.18),
+        0 30px 76px rgba(9, 12, 44, .38),
+        0 0 82px rgba(241, 137, 158, .12) !important;
+    }
+
+    .turkeyMap {
+      filter: saturate(.90) contrast(.96) brightness(.96) hue-rotate(4deg);
+    }
+
+    .zoomTools {
+      background: rgba(255, 220, 229, .075) !important;
+      border-color: rgba(255, 224, 224, .20) !important;
+    }
+
+    .fitBtn {
+      color: #ffd6cf !important;
+    }
+
+    /* Final preferred skin: darker elite dusk cockpit with a quiet 737 silhouette */
+    :root {
+      --bg: #0b1420;
+      --panel: rgba(18, 31, 43, .72);
+      --ink: #eef6ff;
+      --muted: #b8c9d8;
+      --line: rgba(235, 217, 174, .14);
+      --blue: #238ee7;
+      --green: #7af0ad;
+      --amber: #d0a23a;
+      --red: #ff7272;
+      --shadow: 0 24px 58px rgba(3, 9, 18, .34);
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 18% 8%, rgba(102, 145, 176, .22), transparent 30%),
+        radial-gradient(circle at 72% 14%, rgba(218, 169, 82, .12), transparent 28%),
+        radial-gradient(ellipse at 50% 108%, rgba(226, 135, 51, .30), transparent 34%),
+        linear-gradient(180deg, #07101d 0%, #0d1a28 42%, #19242c 68%, #2b2119 100%) !important;
+      color: #eef6ff !important;
+    }
+
+    body::before {
+      content: "" !important;
+      display: block !important;
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(118deg, transparent 0 43%, rgba(255, 214, 129, .075) 43.4%, transparent 44.4% 100%),
+        linear-gradient(62deg, transparent 0 49%, rgba(108, 172, 255, .060) 49.4%, transparent 50.3% 100%),
+        radial-gradient(ellipse at 50% 90%, rgba(231, 156, 66, .22), transparent 24%);
+      opacity: .92;
+      mix-blend-mode: normal;
+    }
+
+    body::after {
+      content: "" !important;
+      display: block !important;
+      position: fixed;
+      left: 3vw;
+      right: 3vw;
+      bottom: 20px;
+      height: 92px;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle, rgba(255, 214, 117, .84) 0 2px, transparent 3px) 0 66px / 58px 18px repeat-x,
+        radial-gradient(circle, rgba(92, 184, 255, .50) 0 2px, transparent 3px) 28px 42px / 70px 18px repeat-x,
+        linear-gradient(92deg, transparent 0 45%, rgba(255,255,255,.105) 45.3% 45.6%, transparent 46% 54%, rgba(255,255,255,.105) 54.3% 54.6%, transparent 55% 100%);
+      opacity: .30;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      isolation: isolate;
+      background:
+        linear-gradient(90deg,
+          rgba(7, 17, 28, .84) 0%,
+          rgba(16, 31, 43, .78) 18%,
+          rgba(27, 40, 50, .70) 38%,
+          rgba(34, 43, 48, .62) 62%,
+          rgba(19, 34, 45, .76) 83%,
+          rgba(8, 20, 32, .86) 100%) !important;
+      backdrop-filter: blur(9px) saturate(1.08);
+    }
+
+    .app::before {
+      content: "" !important;
+      display: block !important;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(7, 16, 25, .36), transparent 26%, transparent 74%, rgba(7, 16, 25, .34)),
+        radial-gradient(ellipse at 53% 68%, rgba(232, 165, 78, .16), transparent 38%),
+        url("/assets/boeing-737-silhouette.png") center 66% / min(1640px, 92vw) auto no-repeat;
+      opacity: .34;
+      filter:
+        saturate(.90)
+        contrast(1.16)
+        brightness(1.18)
+        drop-shadow(0 0 66px rgba(235, 164, 76, .24));
+      transform: translateX(-1.5vw);
+      mix-blend-mode: screen;
+    }
+
+    .app > * {
+      position: relative;
+      z-index: 2;
+    }
+
+    aside,
+    .pane,
+    .assistantPane,
+    .viewerPane {
+      background:
+        linear-gradient(180deg, rgba(20, 34, 44, .50), rgba(11, 24, 34, .62)) !important;
+      border: 0 !important;
+    }
+
+    .app > * + * {
+      box-shadow: inset 1px 0 0 rgba(255,255,255,.020) !important;
+    }
+
+    .viewerPane {
+      background:
+        radial-gradient(circle at 50% 105%, rgba(224, 142, 58, .115), transparent 32%),
+        linear-gradient(180deg, rgba(24, 39, 49, .68), rgba(13, 27, 38, .78)) !important;
+    }
+
+    .control,
+    .mapBox,
+    .card,
+    .chartList,
+    .chatWindow,
+    .analysisItem,
+    .empty,
+    .viewerTop {
+      border-color: rgba(231, 223, 205, .135) !important;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.068), rgba(255,255,255,.030)) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.070),
+        0 20px 48px rgba(0,0,0,.18) !important;
+      backdrop-filter: blur(15px) saturate(1.08);
+    }
+
+    .viewerTop {
+      border-radius: 18px !important;
+      background:
+        linear-gradient(135deg, rgba(43, 55, 61, .78), rgba(18, 30, 41, .62)) !important;
+      border-bottom: 0 !important;
+    }
+
+    h1,
+    h2,
+    h3,
+    label,
+    .viewerTop h2 {
+      color: #f7fbff !important;
+      text-shadow: 0 2px 14px rgba(0,0,0,.36) !important;
+    }
+
+    .sub,
+    .muted,
+    .status,
+    .chartMeta,
+    .viewerTop .status,
+    .assistantPane .status {
+      color: rgba(220, 232, 242, .80) !important;
+    }
+
+    input,
+    select,
+    textarea {
+      background: rgba(239, 245, 250, .95) !important;
+      border-color: rgba(235, 217, 174, .28) !important;
+      color: #121923 !important;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: rgba(237, 190, 92, .84) !important;
+      box-shadow:
+        0 0 0 3px rgba(232, 170, 66, .20),
+        0 0 24px rgba(255, 160, 72, .15) !important;
+    }
+
+    button,
+    .quick button,
+    .runwayButtons button,
+    .zoomBtn {
+      background:
+        linear-gradient(180deg, rgba(45, 60, 73, .78), rgba(18, 31, 44, .86)) !important;
+      border-color: rgba(235, 217, 174, .18) !important;
+      color: #f4f8fb !important;
+    }
+
+    button:hover,
+    .quick button:hover,
+    .runwayButtons button:hover,
+    .zoomBtn:hover {
+      background:
+        linear-gradient(180deg, rgba(58, 76, 91, .84), rgba(24, 39, 54, .90)) !important;
+      border-color: rgba(238, 202, 126, .38) !important;
+    }
+
+    .download,
+    .primary,
+    .askBtn,
+    .chartButton.active,
+    .langSwitch button.active,
+    .runwayButtons button.active {
+      background:
+        linear-gradient(135deg, #ead184 0%, #c5972d 50%, #8f621e 100%) !important;
+      border-color: rgba(255, 239, 180, .52) !important;
+      color: #11171b !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.30),
+        0 12px 28px rgba(199, 137, 42, .18) !important;
+    }
+
+    .chartButton {
+      background:
+        linear-gradient(90deg, rgba(26, 42, 54, .66), rgba(14, 27, 39, .36)) !important;
+      color: #f3f8fc !important;
+      border-bottom-color: rgba(232, 224, 205, .09) !important;
+    }
+
+    .chartButton:hover {
+      background:
+        linear-gradient(90deg, rgba(42, 57, 68, .75), rgba(21, 35, 48, .48)) !important;
+    }
+
+    .chartButton.active .chartTitle,
+    .chartButton.active .chartMeta {
+      color: #11171b !important;
+    }
+
+    .chatMessage.ai {
+      background:
+        linear-gradient(180deg, rgba(56, 74, 88, .76), rgba(27, 43, 57, .82)) !important;
+      border-color: rgba(232, 224, 205, .14) !important;
+    }
+
+    .chatMessage.user {
+      background:
+        linear-gradient(135deg, #238ee7 0%, #1565b5 100%) !important;
+      border-color: rgba(151, 216, 255, .40) !important;
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.16),
+        0 10px 28px rgba(32, 139, 231, .16) !important;
+    }
+
+    .pdfStage {
+      background:
+        radial-gradient(circle at 50% 107%, rgba(222, 144, 58, .12), transparent 28%),
+        linear-gradient(180deg, rgba(255,255,255,.034), rgba(255,255,255,.012)) !important;
+    }
+
+    .pdfCanvas {
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.12),
+        0 28px 66px rgba(0,0,0,.32),
+        0 0 72px rgba(222, 155, 69, .08) !important;
+    }
+
+    .zoomTools {
+      background: rgba(255, 214, 143, .058) !important;
+      border-color: rgba(235, 217, 174, .16) !important;
+    }
+
+    .fitBtn {
+      color: #ead184 !important;
+    }
+
+    /* Compact chart list: chart rows should not dominate the left result pane. */
+    .chartList {
+      max-height: min(52vh, 540px) !important;
+      overflow-y: auto !important;
+    }
+
+    .chartButton {
+      min-height: 46px !important;
+      padding: 8px 10px !important;
+      gap: 6px !important;
+    }
+
+    .chartTitle {
+      font-size: 14px !important;
+      line-height: 1.08 !important;
+      letter-spacing: .01em !important;
+    }
+
+    .chartMeta {
+      max-width: 100% !important;
+      margin-top: 2px !important;
+      font-size: 11px !important;
+      line-height: 1.12 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+
+    .tag {
+      padding: 4px 7px !important;
+      font-size: 11px !important;
+      line-height: 1 !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div>
+        <h1 data-i18n="title">Türkiye Chart Lab</h1>
+        <p class="sub" data-i18n="subtitle">Public PDF chartlarını doğrular, erişilebilir olanları sunar ve seçili chart için eğitim desteği sağlar.</p>
+      </div>
+      <div class="langSwitch">
+        <button type="button" id="langTr">Türkçe</button>
+        <button type="button" id="langEn">English</button>
+      </div>
+      <div class="control">
+        <label for="airport" data-i18n="airport">Meydan</label>
+        <select id="airport"></select>
+      </div>
+      <div class="control">
+        <label for="search" data-i18n="search">Meydan ara</label>
+        <input id="search" autocomplete="off" spellcheck="false" placeholder="LTAC, Ankara, ESB">
+      </div>
+      <div>
+        <label data-i18n="mapPick">Haritadan seç</label>
+        <div class="mapBox">
+          <div class="turkeyMap" id="turkeyMap" role="img" aria-label="Türkiye havalimanı haritası"></div>
+          <div class="runwayButtons" id="runwayButtons"></div>
+        </div>
+      </div>
+      <div class="scanActions">
+        <button class="primary" id="fetchBtn" type="button" data-i18n="scanCharts">PDF chartları tara</button>
+        <button class="primary" id="coverageBtn" type="button" data-i18n="scanAll">Tüm meydanları detaylı tara</button>
+      </div>
+      <div class="quickDeck">
+        <label data-i18n="quickPick">Sık meydanlar</label>
+        <div class="quick" id="quickButtons"></div>
+      </div>
+      <div class="coverage" id="coverageBox" data-i18n="coverageIdle">Detaylı tarama henüz çalışmadı.</div>
+      <div class="note" data-i18n="safetyNote">Listeye sadece erişilebilen ve PDF olarak doğrulanan chartlar girer. Kapalı, login isteyen veya gösterilemeyen dosyalar saklanır.</div>
+    </aside>
+
+    <section class="pane">
+      <div>
+        <h2 data-i18n="foundCharts">Bulunan chartlar</h2>
+        <p class="status" id="status">Bir meydan seçip taramayı başlat.</p>
+      </div>
+      <div class="card" id="airportCard"></div>
+      <div class="card" id="airportInfoCard">
+        <h3 data-i18n="airportNotes">Meydan notları</h3>
+        <p class="muted" data-i18n="airportNotesIdle">Meydan seçilince coğrafya ve yaklaşma farkındalığı burada görünür.</p>
+      </div>
+      <div id="errorBox"></div>
+      <div class="chartList" id="chartList"></div>
+    </section>
+
+    <section class="pane viewerPane">
+      <div class="viewerTop">
+        <div>
+          <h2 id="viewerTitle">PDF seçilmedi</h2>
+          <p class="status" id="viewerStatus">Listeden chart seçince burada açılır.</p>
+        </div>
+        <div class="viewerTools">
+          <div class="zoomTools" id="zoomTools" hidden>
+            <button class="zoomBtn" id="zoomOutBtn" type="button" aria-label="PDF küçült">−</button>
+            <button class="zoomBtn fitBtn" id="zoomFitBtn" type="button">Fit</button>
+            <button class="zoomBtn" id="zoomInBtn" type="button" aria-label="PDF büyüt">+</button>
+          </div>
+          <a class="download" id="downloadLink" href="#" download hidden data-i18n="download">PDF indir</a>
+        </div>
+      </div>
+      <div class="empty" id="viewerEmpty" data-i18n="noPdf">Henüz PDF yok.</div>
+      <div class="pdfStage" id="pdfStage" hidden></div>
+      <iframe class="pdfFrame" id="pdfFrame" title="Approach PDF viewer" hidden></iframe>
+    </section>
+
+    <section class="pane assistantPane">
+      <div class="assistantHeader">
+        <div>
+          <h2 data-i18n="teacher">Chart öğretmeni</h2>
+          <p class="status" data-i18n="teacherSub">Seçili PDF üzerinden eğitim amaçlı brifing ve okuma yardımı.</p>
+        </div>
+      </div>
+      <div class="assistantSettings">
+        <label class="switchLine" for="announceChartSelect">
+          <input id="announceChartSelect" type="checkbox">
+          <span class="switchKnob" aria-hidden="true"></span>
+          <span data-i18n="announceChartSelect">Chart seçimini sohbete yaz</span>
+        </label>
+      </div>
+      <div class="chatWindow" id="assistantChat" aria-live="polite"></div>
+      <div class="card chatComposer">
+        <div class="assistantHeader">
+          <label for="question" data-i18n="ask">Sor</label>
+          <button class="clearChatBtn" id="clearChatBtn" type="button" data-i18n="clearChat">Sohbeti temizle</button>
+        </div>
+        <div class="composerRow">
+          <textarea id="question" placeholder="Ciguli'ye yaz..."></textarea>
+          <button class="askBtn" id="askBtn" type="button" data-i18n="askAssistant">Asistana sor</button>
+        </div>
+      </div>
+      <div class="card analysisPanel">
+        <div class="assistantHeader">
+          <div>
+            <label data-i18n="analysisTitle">Chart analizi</label>
+            <p class="status" id="analysisStatus" data-i18n="analysisIdle">PDF seçilince isteğe bağlı analiz burada görünür.</p>
+          </div>
+        </div>
+        <div class="analysisActions">
+          <button class="askBtn" id="analyzeBtn" type="button" data-i18n="analyzeChart">Seçili chartı analiz et 🧠</button>
+        </div>
+        <div class="analysisGrid" id="analysisGrid"></div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const quick = ["LTFM", "LTFJ", "LTAC", "LTBJ", "LTAI", "LTBS", "LTFE", "LTCG"];
+    const messages = {
+      tr: {
+        title: "Türkiye Chart Lab",
+        subtitle: "Premium sim pilotları için public chart keşfi, yaklaşma okuma ve Ciguli desteği.",
+        airport: "🛫 Meydan",
+        search: "🔎 Meydan ara",
+        mapPick: "🗺️ Haritadan seç",
+        scanCharts: "📡 PDF chartları tara",
+        scanAll: "🗼 Tüm meydanları tara",
+        quickPick: "⭐ Sık meydanlar",
+        coverageIdle: "Detaylı tarama henüz çalışmadı.",
+        safetyNote: "Listeye sadece public erişilebilen ve PDF olarak doğrulanan chartlar girer. Kapalı, login isteyen veya gösterilemeyen dosyalar saklanır.",
+        foundCharts: "📄 Bulunan chartlar",
+        airportNotes: "🧭 Meydan notları",
+        airportNotesIdle: "Meydan seçilince coğrafya ve yaklaşma farkındalığı burada görünür.",
+        download: "PDF indir",
+        noPdf: "Henüz PDF yok.",
+        teacher: "👨‍✈️ Ciguli",
+        teacherSub: "Havacılık, simülasyon ve chart okuma için yerel uçuş arkadaşı.",
+        announceChartSelect: "Chart seçimini sohbete yaz",
+        ask: "💬 Ciguli ile konuş",
+        askAssistant: "Gönder ✈️",
+        clearChat: "Ekranı temizle",
+        analysisTitle: "🧠 Chart analizi",
+        analysisIdle: "PDF seçilince isteğe bağlı analiz burada görünür.",
+        analyzeChart: "Seçili chartı analiz et 🧠",
+        analysisLoading: "Chart analiz ediliyor...",
+        analysisPickPdf: "Önce bir PDF chart seç.",
+        assistantHello: "Selam kaptan. Ben Ciguli. Basit sohbet edebilir, havacılık ve simülasyon tarafında yardımcı olabilir, konuştukça seni yerel hafızamda tanıyabilirim.",
+        thinking: "Ciguli düşünüyor",
+        you: "Sen",
+        assistant: "Ciguli",
+        noQuestion: "Ciguli'ye bir mesaj yaz.",
+        aiSetupNeeded: "Yerel Asistan",
+        aiOffline: "AI çevrimdışı",
+        runwayAll: "Tüm pistler",
+        runwayLoading: "Pistler yükleniyor...",
+        runwayUnavailable: "Pist verisi bulunamadı.",
+        chooseAirport: "Bir meydan seçip taramayı başlat.",
+        selected: "seçildi.",
+        pdfNotSelected: "PDF seçilmedi",
+        pdfPick: "Listeden chart seçince burada açılır.",
+        answerIdle: "Bir PDF seç, sonra asistana sor.",
+        pdfSelected: "bağlamı hazır.",
+        scanning: "Taranıyor...",
+        validating: "için public PDF kaynakları doğrulanıyor.",
+        foundPdf: "açılabilir public PDF bulundu.",
+        notFoundPdf: "için açılabilir public PDF bulunamadı.",
+        noDisplayable: "Bu seçim için açılabilir public IAC PDF bulunamadı. Gösterilemeyen adaylar listeye alınmadı.",
+        chartSearchInProgress: "Seçili piste uygun chart aranıyor...",
+        scanFailed: "Tarama başarısız.",
+        allScanning: "Detaylı taranıyor...",
+        allScanningMsg: "Tüm meydanlar taranıyor; bu biraz sürebilir.",
+        noCoverage: "Açılabilir PDF bulunan meydan yok.",
+        readChart: "Chart okunuyor...",
+        pickPdfFirst: "Önce bir PDF chart seç.",
+        mapLoadFail: "Harita kütüphanesi yüklenemedi. İnternet bağlantısını kontrol et.",
+        geography: "Coğrafya",
+        approach: "Yaklaşma",
+        culture: ""
+      },
+      en: {
+        title: "Türkiye Chart Lab",
+        subtitle: "Premium chart discovery, approach reading, and Ciguli support for sim pilots.",
+        airport: "🛫 Airport",
+        search: "🔎 Search airport",
+        mapPick: "🗺️ Pick from map",
+        scanCharts: "📡 Scan PDF charts",
+        scanAll: "🗼 Scan all airports",
+        quickPick: "⭐ Common airports",
+        coverageIdle: "Detailed scan has not run yet.",
+        safetyNote: "Only publicly reachable and PDF-validated charts are listed. Closed, login-only, or undisplayable files are hidden.",
+        foundCharts: "📄 Found charts",
+        airportNotes: "🧭 Airport notes",
+        airportNotesIdle: "Geography and approach-awareness notes appear after selecting an airport.",
+        download: "Download PDF",
+        noPdf: "No PDF yet.",
+        teacher: "👨‍✈️ Ciguli",
+        teacherSub: "Local flight companion for aviation, simulation, and chart reading.",
+        announceChartSelect: "Write chart changes into chat",
+        ask: "💬 Talk to Ciguli",
+        askAssistant: "Send ✈️",
+        clearChat: "Clear screen",
+        analysisTitle: "🧠 Chart analysis",
+        analysisIdle: "Optional analysis appears here after selecting a PDF.",
+        analyzeChart: "Analyze selected chart 🧠",
+        analysisLoading: "Analyzing chart...",
+        analysisPickPdf: "Select a PDF chart first.",
+        assistantHello: "Hi captain. I am Ciguli. I can handle simple chat, help with aviation and simulation, and personalize myself over time using local memory.",
+        thinking: "Ciguli is thinking",
+        you: "You",
+        assistant: "Ciguli",
+        noQuestion: "Write a message to Ciguli.",
+        aiSetupNeeded: "Local Copilot",
+        aiOffline: "AI offline",
+        runwayAll: "All runways",
+        runwayLoading: "Loading runways...",
+        runwayUnavailable: "No runway data found.",
+        chooseAirport: "Select an airport and start scanning.",
+        selected: "selected.",
+        pdfNotSelected: "No PDF selected",
+        pdfPick: "Select a chart from the list to open it here.",
+        answerIdle: "Select a PDF, then ask the assistant.",
+        pdfSelected: "context is ready.",
+        scanning: "Scanning...",
+        validating: "public PDF sources are being validated for",
+        foundPdf: "displayable public PDFs found.",
+        notFoundPdf: "has no displayable public PDF.",
+        noDisplayable: "No displayable public IAC PDF was found for this selection. Hidden candidates are not listed.",
+        chartSearchInProgress: "Finding the matching chart for the selected runway...",
+        scanFailed: "Scan failed.",
+        allScanning: "Scanning all...",
+        allScanningMsg: "Scanning all airports; this may take a while.",
+        noCoverage: "No airports with displayable PDFs.",
+        readChart: "Reading chart...",
+        pickPdfFirst: "Select a PDF chart first.",
+        mapLoadFail: "Map library could not be loaded. Check your internet connection.",
+        geography: "Geography",
+        approach: "Approach",
+        culture: ""
+      }
+    };
+    let currentLang = "tr";
+    const airportEl = document.querySelector("#airport");
+    const searchEl = document.querySelector("#search");
+    const turkeyMapEl = document.querySelector("#turkeyMap");
+    const runwayButtonsEl = document.querySelector("#runwayButtons");
+    const langTrEl = document.querySelector("#langTr");
+    const langEnEl = document.querySelector("#langEn");
+    const fetchBtn = document.querySelector("#fetchBtn");
+    const coverageBtn = document.querySelector("#coverageBtn");
+    const quickEl = document.querySelector("#quickButtons");
+    const coverageBox = document.querySelector("#coverageBox");
+    const statusEl = document.querySelector("#status");
+    const airportCardEl = document.querySelector("#airportCard");
+    const airportInfoCardEl = document.querySelector("#airportInfoCard");
+    const errorBoxEl = document.querySelector("#errorBox");
+    const chartListEl = document.querySelector("#chartList");
+    const viewerTitleEl = document.querySelector("#viewerTitle");
+    const viewerStatusEl = document.querySelector("#viewerStatus");
+    const viewerEmptyEl = document.querySelector("#viewerEmpty");
+    const pdfStageEl = document.querySelector("#pdfStage");
+    const pdfFrameEl = document.querySelector("#pdfFrame");
+    const downloadLinkEl = document.querySelector("#downloadLink");
+    const zoomToolsEl = document.querySelector("#zoomTools");
+    const zoomOutBtn = document.querySelector("#zoomOutBtn");
+    const zoomFitBtn = document.querySelector("#zoomFitBtn");
+    const zoomInBtn = document.querySelector("#zoomInBtn");
+    const questionEl = document.querySelector("#question");
+    const askBtn = document.querySelector("#askBtn");
+    const analyzeBtn = document.querySelector("#analyzeBtn");
+    const analysisStatusEl = document.querySelector("#analysisStatus");
+    const analysisGridEl = document.querySelector("#analysisGrid");
+    const clearChatBtn = document.querySelector("#clearChatBtn");
+    const assistantChatEl = document.querySelector("#assistantChat");
+    const assistantModeEl = document.querySelector("#assistantMode");
+    const announceChartSelectEl = document.querySelector("#announceChartSelect");
+
+    let airports = [];
+    let activeAirport = null;
+    let activeCharts = [];
+    let activeChart = null;
+    let activeRunway = "";
+    let isScanningCharts = false;
+    let chartStatusMode = "idle";
+    let pdfRenderToken = 0;
+    let pdfDocument = null;
+    let pdfBaseScale = 1;
+    let pdfZoom = 1;
+    let activeRunways = [];
+    let chatHistory = [];
+    let map = null;
+    let markers = new Map();
+    let runwayLayer = null;
+    function readPreference(key) {
+      try {
+        return window.localStorage?.getItem(key) || "";
+      } catch {
+        return "";
+      }
+    }
+    function writePreference(key, value) {
+      try {
+        window.localStorage?.setItem(key, value);
+      } catch {
+        // Preferences are optional; Ciguli should keep working even when storage is unavailable.
+      }
+    }
+    let announceChartSelections = readPreference("ciguliAnnounceChartSelect") === "1";
+
+    function t(key) {
+      return messages[currentLang][key] || messages.tr[key] || key;
+    }
+    function escapeHtml(value) {
+      return String(value || "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+    function chartDisplayName(chart) {
+      const airport = activeAirport?.icao || "";
+      const runway = chart?.runways?.length ? ` · RWY ${chart.runways.join(", ")}` : "";
+      return `${airport} · ${chart?.id || "Chart"}${runway}`;
+    }
+    function chartSourceLabel(chart) {
+      return currentLang === "tr" ? "DHMİ AIP · Public PDF" : "DHMİ AIP · Public PDF";
+    }
+    function airportRunwayLabel() {
+      return `${activeAirport?.icao || ""}${activeRunway ? ` RWY ${activeRunway}` : ""}`.trim();
+    }
+    function validatingStatusText() {
+      const label = airportRunwayLabel();
+      return currentLang === "tr"
+        ? `${label} için public PDF kaynakları doğrulanıyor.`
+        : `Validating public PDF sources for ${label}.`;
+    }
+    function chartFoundStatusText(count) {
+      const label = airportRunwayLabel();
+      return currentLang === "tr"
+        ? `${label} için ${count} açılabilir public PDF bulundu.`
+        : `${count} displayable public PDF${count === 1 ? "" : "s"} found for ${label}.`;
+    }
+    function chartNotFoundStatusText() {
+      const label = airportRunwayLabel();
+      return currentLang === "tr"
+        ? `${label} için açılabilir public PDF bulunamadı.`
+        : `No displayable public PDF found for ${label}.`;
+    }
+    function runwayMatchStatusText() {
+      const label = airportRunwayLabel();
+      return currentLang === "tr"
+        ? `${label} için doğru chart aranıyor.`
+        : `Finding the correct chart for ${label}.`;
+    }
+    function selectedAirportStatusText() {
+      const label = activeAirport?.icao || "";
+      return currentLang === "tr"
+        ? `${label} seçildi.`
+        : `${label} selected.`;
+    }
+    function refreshChartStatusText() {
+      if (!activeAirport) return;
+      if (isScanningCharts || chartStatusMode === "scanning") {
+        statusEl.textContent = activeRunway ? runwayMatchStatusText() : validatingStatusText();
+        return;
+      }
+      if (chartStatusMode === "found" || activeCharts.length) {
+        statusEl.textContent = chartFoundStatusText(activeCharts.length || 1);
+        return;
+      }
+      if (chartStatusMode === "empty") {
+        statusEl.textContent = chartNotFoundStatusText();
+        return;
+      }
+      if (chartStatusMode === "failed") {
+        statusEl.textContent = t("scanFailed");
+        return;
+      }
+      statusEl.textContent = selectedAirportStatusText();
+    }
+    function chartHasRunway(chart, runway) {
+      const target = normalize(runway).replace(/^RWY\s*/, "").replace(/[^0-9A-Z]/g, "");
+      return Boolean(target && chart?.runways?.some((value) => normalize(value).replace(/^RWY\s*/, "").replace(/[^0-9A-Z]/g, "") === target));
+    }
+    function scrollChatToBottom() {
+      assistantChatEl.scrollTop = assistantChatEl.scrollHeight;
+    }
+    function formatChatTime(date = new Date()) {
+      return date.toLocaleTimeString("tr-TR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false
+      });
+    }
+    function addChatMessage(role, text, meta = "") {
+      const time = formatChatTime();
+      const visibleMeta = [meta, time].filter(Boolean).join(" · ");
+      const item = { role, text, meta, time };
+      chatHistory.push(item);
+      const node = document.createElement("div");
+      node.className = `chatMessage ${role === "user" ? "user" : "ai"}`;
+      node.innerHTML = `${escapeHtml(text)}${visibleMeta ? `<div class="chatMeta">${escapeHtml(visibleMeta)}</div>` : ""}`;
+      assistantChatEl.appendChild(node);
+      scrollChatToBottom();
+      return node;
+    }
+    function resetAssistantChat() {
+      chatHistory = [];
+      assistantChatEl.innerHTML = "";
+      loadAssistantStatus();
+      addChatMessage("ai", t("assistantHello"), t("assistant"));
+    }
+    async function loadAssistantStatus() {
+      try {
+        const response = await fetch("/api/assistant/capabilities");
+        const payload = await response.json();
+        if (assistantModeEl) assistantModeEl.textContent = "";
+      } catch {
+        if (assistantModeEl) assistantModeEl.textContent = "";
+      }
+    }
+    function setThinking(isThinking) {
+      if (isThinking) {
+        askBtn.disabled = true;
+        const node = document.createElement("div");
+        node.className = "chatMessage ai typingDots";
+        node.id = "typingMessage";
+        node.textContent = t("thinking");
+        assistantChatEl.appendChild(node);
+        scrollChatToBottom();
+        return;
+      }
+      askBtn.disabled = false;
+      document.querySelector("#typingMessage")?.remove();
+    }
+    function applyLanguage() {
+      const shouldLocalizeSeedChat = chatHistory.length === 1
+        && chatHistory[0].role === "ai"
+        && [messages.tr.assistantHello, messages.en.assistantHello].includes(chatHistory[0].text);
+      document.documentElement.lang = currentLang;
+      document.querySelectorAll("[data-i18n]").forEach((node) => {
+        node.textContent = t(node.dataset.i18n);
+      });
+      langTrEl.classList.toggle("active", currentLang === "tr");
+      langEnEl.classList.toggle("active", currentLang === "en");
+      if (assistantModeEl) assistantModeEl.textContent = "";
+      searchEl.placeholder = currentLang === "tr" ? "LTAC, Ankara, ESB" : "LTAC, Ankara, ESB";
+      questionEl.placeholder = currentLang === "tr"
+        ? "Ciguli'ye yaz..."
+        : "Write to Ciguli...";
+      if (!activeChart) {
+        viewerTitleEl.textContent = t("pdfNotSelected");
+        viewerStatusEl.textContent = t("pdfPick");
+        analysisStatusEl.textContent = t("analysisIdle");
+      }
+      if (airports.length) {
+        renderAirportOptions();
+        renderAirportCard();
+        renderCharts();
+        refreshChartStatusText();
+      }
+      if (!chatHistory.length || shouldLocalizeSeedChat) resetAssistantChat();
+      renderRunways();
+    }
+
+    function normalize(value) {
+      return String(value || "").toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+    }
+    function optionLabel(airport) {
+      return `${airport.icao} - ${airport.iata} - ${airport.city} - ${localAirportName(airport)}`;
+    }
+    function localAirportName(airport) {
+      const name = String(airport?.name || "");
+      if (currentLang === "tr") return name;
+      return name
+        .replaceAll("Havalimanı", "Airport")
+        .replaceAll("Havaalanı", "Airport")
+        .replaceAll("Havalimani", "Airport")
+        .replaceAll("Havaalani", "Airport")
+        .replaceAll("Hava Üssü", "Air Base")
+        .replaceAll("Hava Ussu", "Air Base");
+    }
+    function markerStyle(airport) {
+      const active = activeAirport?.icao === airport.icao;
+      return {
+        radius: active ? 8 : 5,
+        color: active ? "#ffffff" : "#102638",
+        weight: active ? 3 : 2,
+        fillColor: active ? "#27c46b" : "#f4c04f",
+        fillOpacity: 0.95
+      };
+    }
+    function initMap() {
+      if (map || !window.L) return;
+      map = L.map(turkeyMapEl, {
+        zoomControl: true,
+        attributionControl: true
+      }).setView([39.0, 35.1], 5);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 12,
+        attribution: "&copy; OpenStreetMap"
+      }).addTo(map);
+      runwayLayer = L.layerGroup().addTo(map);
+    }
+    function runwayEndpoints(airport, runway) {
+      const heading = Number.isFinite(runway.heading) ? runway.heading : 0;
+      const lengthFt = runway.lengthFt || 9000;
+      const lengthKm = Math.max(1.2, Math.min(4.5, lengthFt * 0.0003048));
+      const halfKm = lengthKm / 2;
+      const rad = heading * Math.PI / 180;
+      const dLat = (Math.cos(rad) * halfKm) / 111;
+      const dLon = (Math.sin(rad) * halfKm) / (111 * Math.cos(airport.lat * Math.PI / 180));
+      return [
+        [airport.lat - dLat, airport.lon - dLon],
+        [airport.lat + dLat, airport.lon + dLon]
+      ];
+    }
+    function drawRunways() {
+      if (!map || !runwayLayer || !activeAirport) return;
+      runwayLayer.clearLayers();
+      for (const runway of activeRunways) {
+        if (!Number.isFinite(runway.heading)) continue;
+        const active = activeRunway && runway.ident.includes(activeRunway);
+        L.polyline(runwayEndpoints(activeAirport, runway), {
+          color: active ? "#27c46b" : "#145ea8",
+          weight: active ? 7 : 5,
+          opacity: 0.9
+        }).bindTooltip(`${runway.ident} · ${Math.round(runway.heading)}°`, {
+          permanent: false,
+          direction: "top"
+        }).on("click", () => selectRunway(runway.le || runway.ident.split("/")[0]))
+          .addTo(runwayLayer);
+      }
+    }
+    function renderMap() {
+      if (!window.L) {
+        turkeyMapEl.textContent = t("mapLoadFail");
+        return;
+      }
+      initMap();
+      if (!map) return;
+      airports
+        .filter((airport) => Number.isFinite(airport.lat) && Number.isFinite(airport.lon))
+        .forEach((airport) => {
+          let marker = markers.get(airport.icao);
+          if (!marker) {
+            marker = L.circleMarker([airport.lat, airport.lon], markerStyle(airport))
+              .bindPopup(`<strong>${airport.icao}</strong><br>${airport.city} - ${airport.name}`)
+              .on("click", () => selectAirport(airport.icao, true))
+              .addTo(map);
+            markers.set(airport.icao, marker);
+          }
+          marker.setStyle(markerStyle(airport));
+        });
+      if (activeAirport && markers.has(activeAirport.icao)) {
+        markers.get(activeAirport.icao).bringToFront();
+      }
+      drawRunways();
+    }
+    async function loadRunways() {
+      activeRunways = [];
+      activeRunway = "";
+      renderRunways(true);
+      if (!activeAirport) return;
+      try {
+        const response = await fetch(`/api/runways?icao=${encodeURIComponent(activeAirport.icao)}`);
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || "Runway data failed");
+        activeRunways = payload.runways || [];
+      } catch {
+        activeRunways = [];
+      }
+      renderRunways();
+      drawRunways();
+    }
+    function runwayChoices() {
+      const choices = [];
+      for (const runway of activeRunways) {
+        if (runway.le) choices.push({ ident: runway.le, label: `RWY ${runway.le}` });
+        if (runway.he) choices.push({ ident: runway.he, label: `RWY ${runway.he}` });
+      }
+      return choices;
+    }
+    function renderRunways(loading = false) {
+      if (loading) {
+        runwayButtonsEl.innerHTML = `<button type="button" disabled>${t("runwayLoading")}</button>`;
+        return;
+      }
+      const choices = runwayChoices();
+      if (!choices.length) {
+        runwayButtonsEl.innerHTML = `<button type="button" disabled>${t("runwayUnavailable")}</button>`;
+        return;
+      }
+      runwayButtonsEl.innerHTML = [
+        `<button type="button" class="${activeRunway ? "" : "active"}" data-runway="">${t("runwayAll")}</button>`,
+        ...choices.map((choice) => `<button type="button" class="${activeRunway === choice.ident ? "active" : ""}" data-runway="${choice.ident}">${choice.label}</button>`)
+      ].join("");
+      runwayButtonsEl.querySelectorAll("button[data-runway]").forEach((button) => {
+        button.addEventListener("click", () => selectRunway(button.dataset.runway));
+      });
+    }
+    function selectRunway(runway) {
+      activeRunway = runway || "";
+      renderRunways();
+      drawRunways();
+      if (activeRunway) {
+        fetchChartForRunway();
+      } else {
+        fetchCharts();
+      }
+    }
+    function selectAirport(icao, shouldFetch) {
+      searchEl.value = "";
+      renderAirportOptions();
+      airportEl.value = icao;
+      activeAirport = airports.find((airport) => airport.icao === icao);
+      activeCharts = [];
+      activeChart = null;
+      activeRunway = "";
+      chartStatusMode = "idle";
+      isScanningCharts = false;
+      renderAirportCard();
+      loadAirportInfo();
+      loadRunways();
+      renderMap();
+      renderCharts();
+      clearViewer();
+      if (shouldFetch) {
+        fetchCharts();
+      } else {
+        refreshChartStatusText();
+      }
+    }
+    function setError(message) {
+      errorBoxEl.innerHTML = message ? `<div class="error">${message}</div>` : "";
+    }
+    function renderAirportOptions() {
+      const term = normalize(searchEl.value);
+      const selected = airportEl.value || "LTAC";
+      const filtered = airports.filter((airport) => !term || normalize(optionLabel(airport)).includes(term));
+      airportEl.innerHTML = filtered.map((airport) => `<option value="${airport.icao}">${optionLabel(airport)}</option>`).join("");
+      airportEl.value = filtered.some((airport) => airport.icao === selected) ? selected : filtered[0]?.icao || "";
+      activeAirport = airports.find((airport) => airport.icao === airportEl.value);
+      renderAirportCard();
+      renderMap();
+    }
+    function renderAirportCard() {
+      if (!activeAirport) return;
+      airportCardEl.innerHTML = `
+        <div class="icao">${activeAirport.icao}</div>
+        <strong>${localAirportName(activeAirport)}</strong>
+        <div class="muted">${activeAirport.city} - ${activeAirport.iata}</div>
+      `;
+    }
+    async function loadAirportInfo() {
+      if (!activeAirport) return;
+      airportInfoCardEl.innerHTML = `
+        <h3>${t("airportNotes")}</h3>
+        <p class="muted">${currentLang === "tr" ? "Bilgiler yükleniyor..." : "Loading notes..."}</p>
+      `;
+      try {
+        const response = await fetch(`/api/airport-info?icao=${encodeURIComponent(activeAirport.icao)}&lang=${currentLang}`);
+        const info = await response.json();
+        if (!response.ok) throw new Error(info.error || (currentLang === "tr" ? "Meydan bilgisi alınamadı." : "Airport notes could not be loaded."));
+        airportInfoCardEl.innerHTML = `
+          <h3>${t("airportNotes")}</h3>
+          ${info.profile ? `<p class="muted"><strong>${currentLang === "tr" ? "İsim hikâyesi" : "Name origin"}:</strong> ${info.profile.nameOrigin}</p>` : ""}
+          ${info.profile ? `<p class="muted"><strong>${currentLang === "tr" ? "Yolcu/trafik profili" : "Traffic profile"}:</strong> ${info.profile.traffic}</p>` : ""}
+          ${info.profile ? `<p class="muted"><strong>${currentLang === "tr" ? "Coğrafi profil" : "Geographic profile"}:</strong> ${info.profile.geography}</p>` : ""}
+          ${info.profile ? "" : `<p class="muted"><strong>${t("geography")}:</strong> ${info.terrain}</p>`}
+          <p class="muted"><strong>${t("approach")}:</strong> ${info.approach}</p>
+        `;
+      } catch (error) {
+        airportInfoCardEl.innerHTML = `
+          <h3>${t("airportNotes")}</h3>
+          <p class="muted">${error.message}</p>
+        `;
+      }
+    }
+    function clearViewer() {
+      pdfRenderToken += 1;
+      activeChart = null;
+      pdfDocument = null;
+      pdfBaseScale = 1;
+      pdfZoom = 1;
+      viewerTitleEl.textContent = t("pdfNotSelected");
+      viewerStatusEl.textContent = t("pdfPick");
+      viewerEmptyEl.hidden = false;
+      pdfStageEl.hidden = true;
+      pdfStageEl.classList.remove("zoomed");
+      pdfStageEl.innerHTML = "";
+      pdfFrameEl.hidden = true;
+      pdfFrameEl.removeAttribute("src");
+      downloadLinkEl.hidden = true;
+      if (zoomToolsEl) zoomToolsEl.hidden = true;
+      updateZoomControls();
+      viewerStatusEl.title = "";
+      analysisGridEl.innerHTML = "";
+      analysisStatusEl.textContent = t("analysisIdle");
+    }
+    function openPdf(chart) {
+      const renderToken = ++pdfRenderToken;
+      activeChart = chart;
+      pdfDocument = null;
+      pdfBaseScale = 1;
+      pdfZoom = 1;
+      const cleanViewerUrl = `${chart.viewerUrl}#toolbar=0&navpanes=0&scrollbar=0&page=1&view=Fit`;
+      viewerTitleEl.textContent = chartDisplayName(chart);
+      viewerStatusEl.textContent = chartSourceLabel(chart);
+      viewerStatusEl.title = chart.file;
+      viewerEmptyEl.hidden = true;
+      pdfFrameEl.hidden = true;
+      pdfFrameEl.removeAttribute("src");
+      renderPdfStage(chart.viewerUrl, cleanViewerUrl, renderToken);
+      downloadLinkEl.hidden = false;
+      downloadLinkEl.href = chart.viewerUrl;
+      downloadLinkEl.download = chart.file;
+      if (zoomToolsEl) zoomToolsEl.hidden = false;
+      updateZoomControls();
+      analysisGridEl.innerHTML = "";
+      analysisStatusEl.textContent = t("analysisIdle");
+      if (announceChartSelections) {
+        addChatMessage("ai", `${chartDisplayName(chart)} ${t("pdfSelected")}`, t("assistant"));
+      }
+      renderCharts();
+    }
+    async function renderPdfStage(pdfUrl, fallbackUrl, renderToken) {
+      pdfStageEl.hidden = false;
+      pdfStageEl.classList.remove("zoomed");
+      pdfStageEl.innerHTML = `<div class="pdfLoading">${currentLang === "en" ? "Opening chart..." : "Chart açılıyor..."}</div>`;
+
+      if (!window.pdfjsLib) {
+        showPdfFallback(fallbackUrl, renderToken);
+        return;
+      }
+
+      try {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+        pdfDocument = await pdfjsLib.getDocument(pdfUrl).promise;
+        if (renderToken !== pdfRenderToken) return;
+        await renderPdfPages(renderToken, true);
+      } catch (error) {
+        showPdfFallback(fallbackUrl, renderToken);
+      }
+    }
+    async function renderPdfPages(renderToken, fitToPage = false) {
+      if (!pdfDocument) return;
+        pdfStageEl.innerHTML = "";
+
+      const firstPage = await pdfDocument.getPage(1);
+      if (renderToken !== pdfRenderToken) return;
+      const baseViewport = firstPage.getViewport({ scale: 1 });
+        const stageWidth = Math.max(360, pdfStageEl.clientWidth - 32);
+        const stageHeight = Math.max(520, pdfStageEl.clientHeight - 32);
+      if (fitToPage) {
+        const widthFit = stageWidth / baseViewport.width;
+        const heightFit = stageHeight / baseViewport.height;
+        pdfBaseScale = Math.min(widthFit, heightFit, 1.45);
+        pdfZoom = 1;
+      }
+      const cssScale = Math.max(0.35, Math.min(pdfBaseScale * pdfZoom, 3.25));
+        const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      pdfStageEl.classList.toggle("zoomed", pdfZoom > 1.02);
+
+      for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber += 1) {
+        const page = pageNumber === 1 ? firstPage : await pdfDocument.getPage(pageNumber);
+          if (renderToken !== pdfRenderToken) return;
+
+        const pageBaseViewport = page.getViewport({ scale: 1 });
+          const viewport = page.getViewport({ scale: cssScale * pixelRatio });
+
+          const canvas = document.createElement("canvas");
+          canvas.className = "pdfCanvas";
+          canvas.width = Math.floor(viewport.width);
+          canvas.height = Math.floor(viewport.height);
+        canvas.style.width = `${Math.floor(pageBaseViewport.width * cssScale)}px`;
+        canvas.style.height = `${Math.floor(pageBaseViewport.height * cssScale)}px`;
+
+          const context = canvas.getContext("2d", { alpha: false });
+          context.fillStyle = "#ffffff";
+          context.fillRect(0, 0, canvas.width, canvas.height);
+
+          pdfStageEl.appendChild(canvas);
+          await page.render({ canvasContext: context, viewport }).promise;
+        }
+      updateZoomControls();
+    }
+    function rerenderActivePdf(fitToPage = false) {
+      if (!pdfDocument || !activeChart) return;
+      const renderToken = ++pdfRenderToken;
+      renderPdfPages(renderToken, fitToPage);
+    }
+    function updateZoomControls() {
+      if (!zoomToolsEl) return;
+      const hasRenderedPdf = Boolean(pdfDocument && activeChart && !pdfStageEl.hidden);
+      zoomToolsEl.hidden = !activeChart;
+      if (zoomOutBtn) zoomOutBtn.disabled = !hasRenderedPdf || pdfZoom <= 0.56;
+      if (zoomFitBtn) zoomFitBtn.disabled = !hasRenderedPdf || Math.abs(pdfZoom - 1) < 0.03;
+      if (zoomInBtn) zoomInBtn.disabled = !hasRenderedPdf || pdfZoom >= 2.79;
+      }
+    function showPdfFallback(fallbackUrl, renderToken) {
+      if (renderToken !== pdfRenderToken) return;
+      pdfDocument = null;
+      pdfStageEl.hidden = true;
+      pdfStageEl.innerHTML = "";
+      pdfFrameEl.hidden = false;
+      pdfFrameEl.src = fallbackUrl;
+      if (zoomToolsEl) zoomToolsEl.hidden = true;
+      updateZoomControls();
+    }
+    function renderAnalysis(payload) {
+      analysisStatusEl.textContent = currentLang === "en" ? "Analysis ready." : "Analiz hazır.";
+      analysisGridEl.innerHTML = (payload.sections || []).map((section) => {
+        const items = Array.isArray(section.items) ? section.items : [];
+        const body = items.length
+          ? `<div class="analysisRows">${items.map((item) => `
+              <div class="analysisRow">
+                <div class="analysisLabel">${escapeHtml(item.label || "")}</div>
+                <div class="analysisValue">${escapeHtml(item.value || "")}</div>
+              </div>
+            `).join("")}</div>`
+          : `<div class="analysisText">${escapeHtml(section.value || "")}</div>`;
+        return `
+          <div class="analysisItem ${escapeHtml(section.confidence || "")}">
+            <strong>${escapeHtml(section.title)}</strong>
+            ${body}
+          </div>
+        `;
+      }).join("");
+    }
+    async function analyzeSelectedChart() {
+      if (!activeChart) {
+        analysisStatusEl.textContent = t("analysisPickPdf");
+        return;
+      }
+      analyzeBtn.disabled = true;
+      analysisStatusEl.textContent = t("analysisLoading");
+      try {
+        const response = await fetch(`/api/chart-analysis?file=${encodeURIComponent(activeChart.file)}&airport=${encodeURIComponent(activeAirport.icao)}&lang=${currentLang}`);
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || t("scanFailed"));
+        renderAnalysis(payload);
+        addChatMessage("ai", payload.summary, `${t("assistant")} · chart analysis`);
+      } catch (error) {
+        analysisStatusEl.textContent = error.message;
+      } finally {
+        analyzeBtn.disabled = false;
+      }
+    }
+    function renderCharts() {
+      if (!activeCharts.length) {
+        chartListEl.innerHTML = `<div class="empty">${isScanningCharts ? t("chartSearchInProgress") : t("noDisplayable")}</div>`;
+        return;
+      }
+      chartListEl.innerHTML = activeCharts.map((chart, index) => `
+        <button class="chartButton ${activeChart?.file === chart.file ? "active" : ""}" type="button" data-index="${index}">
+          <span>
+            <span class="chartTitle">${escapeHtml(chartDisplayName(chart))}</span>
+            <div class="chartMeta" title="${escapeHtml(chart.file)}">${escapeHtml(chartSourceLabel(chart))}</div>
+          </span>
+          <span class="tag">PDF OK</span>
+        </button>
+      `).join("");
+      chartListEl.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", () => openPdf(activeCharts[Number(button.dataset.index)]));
+      });
+    }
+    async function fetchCharts() {
+      if (!activeAirport) return;
+      if (activeRunway) {
+        await fetchChartForRunway();
+        return;
+      }
+      fetchBtn.disabled = true;
+      fetchBtn.textContent = t("scanning");
+      isScanningCharts = true;
+      chartStatusMode = "scanning";
+      setError("");
+      clearViewer();
+      activeCharts = [];
+      renderCharts();
+      refreshChartStatusText();
+      try {
+        const runwayParam = activeRunway ? `&runway=${encodeURIComponent(activeRunway)}` : "";
+        const response = await fetch(`/api/charts?icao=${encodeURIComponent(activeAirport.icao)}${runwayParam}`);
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || (currentLang === "tr" ? "Chart listesi alınamadı." : "Chart list could not be loaded."));
+        activeCharts = payload.charts;
+        isScanningCharts = false;
+        chartStatusMode = activeCharts.length ? "found" : "empty";
+        refreshChartStatusText();
+        renderCharts();
+        if (activeCharts[0]) openPdf(activeCharts[0]);
+      } catch (error) {
+        isScanningCharts = false;
+        chartStatusMode = "failed";
+        setError(error.message);
+        refreshChartStatusText();
+      } finally {
+        fetchBtn.disabled = false;
+        fetchBtn.textContent = t("scanCharts");
+      }
+    }
+    async function fetchChartForRunway() {
+      if (!activeAirport || !activeRunway) return;
+      const alreadyOpen = activeChart && chartHasRunway(activeChart, activeRunway);
+      if (alreadyOpen) {
+        activeCharts = [activeChart];
+        chartStatusMode = "found";
+        renderCharts();
+        refreshChartStatusText();
+        return;
+      }
+      fetchBtn.disabled = true;
+      fetchBtn.textContent = t("scanning");
+      isScanningCharts = true;
+      chartStatusMode = "scanning";
+      setError("");
+      clearViewer();
+      activeCharts = [];
+      renderCharts();
+      refreshChartStatusText();
+      try {
+        const response = await fetch(`/api/chart-match?icao=${encodeURIComponent(activeAirport.icao)}&runway=${encodeURIComponent(activeRunway)}`);
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || (currentLang === "tr" ? "Chart listesi alınamadı." : "Chart list could not be loaded."));
+        activeCharts = payload.charts || [];
+        isScanningCharts = false;
+        chartStatusMode = activeCharts.length ? "found" : "empty";
+        refreshChartStatusText();
+        renderCharts();
+        if (activeCharts[0]) openPdf(activeCharts[0]);
+      } catch (error) {
+        isScanningCharts = false;
+        chartStatusMode = "failed";
+        setError(error.message);
+        refreshChartStatusText();
+      } finally {
+        fetchBtn.disabled = false;
+        fetchBtn.textContent = t("scanCharts");
+      }
+    }
+    async function runCoverage() {
+      coverageBtn.disabled = true;
+      coverageBtn.textContent = t("allScanning");
+      coverageBox.textContent = t("allScanningMsg");
+      try {
+        const response = await fetch("/api/coverage");
+        const payload = await response.json();
+        coverageBox.innerHTML = payload.airports
+          .map((airport) => `<div>${airport.icao}: ${airport.charts} PDF</div>`)
+          .join("") || t("noCoverage");
+      } catch (error) {
+        coverageBox.textContent = error.message;
+      } finally {
+        coverageBtn.disabled = false;
+        coverageBtn.textContent = t("scanAll");
+      }
+    }
+    async function askAssistant(prompt) {
+      const question = String(prompt || questionEl.value || "").trim();
+      if (!question) {
+        addChatMessage("ai", t("noQuestion"), t("assistant"));
+        return;
+      }
+      addChatMessage("user", question, t("you"));
+      questionEl.value = "";
+      setThinking(true);
+      try {
+        const response = await fetch("/api/assist", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            file: activeChart?.file || "",
+            airport: activeAirport?.icao || "",
+            question,
+            lang: currentLang,
+            history: chatHistory.slice(-8)
+          })
+        });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || (currentLang === "tr" ? "Asistan yanıt veremedi." : "Assistant could not answer."));
+        if (assistantModeEl) assistantModeEl.textContent = "";
+        setThinking(false);
+        addChatMessage("ai", payload.answer, t("assistant"));
+      } catch (error) {
+        setThinking(false);
+        addChatMessage("ai", error.message, t("assistant"));
+      } finally {
+        askBtn.disabled = false;
+      }
+    }
+    async function init() {
+      const response = await fetch("/api/airports");
+      const payload = await response.json();
+      airports = payload.airports;
+      applyLanguage();
+      loadAssistantStatus();
+      renderAirportOptions();
+      airportEl.value = "LTAC";
+      activeAirport = airports.find((airport) => airport.icao === "LTAC");
+      renderAirportCard();
+      loadAirportInfo();
+      loadRunways();
+      renderMap();
+      quick.forEach((icao) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = icao;
+        button.addEventListener("click", () => {
+          selectAirport(icao, true);
+        });
+        quickEl.appendChild(button);
+      });
+      airportEl.addEventListener("change", () => {
+        activeAirport = airports.find((airport) => airport.icao === airportEl.value);
+        activeCharts = [];
+        chartStatusMode = "idle";
+        activeRunway = "";
+        renderAirportCard();
+        loadAirportInfo();
+        loadRunways();
+        renderMap();
+        renderCharts();
+        clearViewer();
+        refreshChartStatusText();
+      });
+      searchEl.addEventListener("input", renderAirportOptions);
+      fetchBtn.addEventListener("click", fetchCharts);
+      coverageBtn.addEventListener("click", runCoverage);
+      askBtn.addEventListener("click", () => askAssistant());
+      analyzeBtn.addEventListener("click", analyzeSelectedChart);
+      zoomOutBtn.addEventListener("click", () => {
+        pdfZoom = Math.max(0.55, Number((pdfZoom - 0.18).toFixed(2)));
+        rerenderActivePdf(false);
+      });
+      zoomFitBtn.addEventListener("click", () => {
+        pdfZoom = 1;
+        rerenderActivePdf(true);
+      });
+      zoomInBtn.addEventListener("click", () => {
+        pdfZoom = Math.min(2.8, Number((pdfZoom + 0.22).toFixed(2)));
+        rerenderActivePdf(false);
+      });
+      clearChatBtn.addEventListener("click", resetAssistantChat);
+      announceChartSelectEl.checked = announceChartSelections;
+      announceChartSelectEl.addEventListener("change", () => {
+        announceChartSelections = announceChartSelectEl.checked;
+        writePreference("ciguliAnnounceChartSelect", announceChartSelections ? "1" : "0");
+      });
+      questionEl.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.shiftKey) {
+          event.preventDefault();
+          askAssistant();
+        }
+      });
+      langTrEl.addEventListener("click", () => {
+        currentLang = "tr";
+        applyLanguage();
+        loadAssistantStatus();
+        loadAirportInfo();
+      });
+      langEnEl.addEventListener("click", () => {
+        currentLang = "en";
+        applyLanguage();
+        loadAssistantStatus();
+        loadAirportInfo();
+      });
+      fetchCharts();
+    }
+    init().catch((error) => {
+      setError(error.message);
+      statusEl.textContent = currentLang === "tr" ? "Uygulama başlatılamadı." : "Application could not start.";
+    });
+  </script>
+</body>
+</html>

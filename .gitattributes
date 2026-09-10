@@ -1,0 +1,3 @@
+outputs/** linguist-generated
+app/__pycache__/** linguist-generated
+*.cmd linguist-vendored

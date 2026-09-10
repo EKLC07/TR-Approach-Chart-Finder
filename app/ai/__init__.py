@@ -1,0 +1,2 @@
+"""Approvaq AI assistant package."""
+

@@ -1,0 +1,135 @@
+TURKIYE CHART LAB - CIGULI USER GUIDE
+=====================================
+
+Ciguli is the local flight assistant inside Turkiye Approach Chart Lab.
+It works with the currently selected airport and approach chart to help you read charts faster, identify important values, and understand the procedure more clearly.
+
+
+1. SELECT A CHART FIRST FOR THE BEST RESULT
+-------------------------------------------
+
+Ciguli works best when an airport and a chart are already selected on the screen.
+
+Recommended flow:
+
+1) Select the airport from the left panel.
+2) Use "Scan PDF charts" or "Scan all airports" to load the chart list.
+3) Select the chart you want to inspect.
+4) If needed, press "Analyze selected chart".
+5) Ask Ciguli a short and clear question.
+
+Examples:
+
+- "Which runway is this chart for?"
+- "What are the minima for this approach?"
+- "When does the APP/descent profile begin?"
+- "At what altitude does the 3-degree descent start?"
+- "Explain the missed approach in Turkish."
+- "Summarize this procedure step by step."
+
+
+2. HOW TO ASK CIGULI QUESTIONS
+------------------------------
+
+Ciguli performs better with short, direct, and context-aware questions.
+
+Good examples:
+
+- "What is the course value for RWY 03C?"
+- "What is the max holding speed?"
+- "List the VOR/NDB/DME frequencies."
+- "What is the transition altitude?"
+- "Tell me the AD elevation and threshold elevation."
+- "Explain the missed approach in pilot briefing style."
+- "Which navigation aids are used in this chart?"
+- "Separate the minima by aircraft category."
+
+Weaker examples:
+
+- "Explain this."
+- "What should I do?"
+- "Tell me everything."
+
+Ciguli can still help with broad questions, but the result is better when you ask for a specific value or part of the procedure.
+
+
+3. WHAT DATA DOES CIGULI PRIORITIZE?
+------------------------------------
+
+When chart analysis is available, Ciguli focuses on operationally useful chart data:
+
+- Airport name and city
+- Runway name
+- Approach type
+- Course / heading value
+- AD elevation
+- Threshold elevation
+- Transition altitude
+- APP / profile start altitudes
+- 3-degree descent start point or altitude
+- MAPt / missed approach point
+- Max holding speed
+- VOR, NDB, DME, ILS, ATIS and similar frequencies
+- Minima values
+- Missed approach text
+- Navigation aids used by the procedure
+
+Instead of filling the analysis with low-value text, Ciguli tries to highlight the numbers and procedure details that are actually useful during chart briefing.
+
+
+4. TURKISH AND ENGLISH SUPPORT
+------------------------------
+
+Ciguli is designed to understand both Turkish and English questions.
+
+Turkish examples:
+
+- "Hangi şehir bu?"
+- "Meydan nerede?"
+- "Pist yönü kaç derece?"
+- "Missed approach'u Türkçe anlat."
+
+English examples:
+
+- "Which runway is this chart for?"
+- "What is the minimum?"
+- "Summarize the missed approach."
+- "List the frequencies."
+
+When the app language is changed, the interface adapts. Ciguli will generally answer in the same language you use.
+
+
+5. PRACTICAL CHART READING FLOW
+-------------------------------
+
+When studying an approach chart, this question order is usually effective:
+
+1) "Briefly summarize this chart."
+2) "Tell me the runway, approach type, and course value."
+3) "List the frequencies."
+4) "Extract the descent start and profile altitudes."
+5) "Separate the minima values."
+6) "Explain the missed approach clearly."
+7) "Summarize everything like a pilot approach briefing."
+
+This flow helps you read the chart in an operational order instead of scanning the entire page randomly.
+
+
+6. IMPORTANT LIMITATIONS
+------------------------
+
+Ciguli is a reading and briefing assistant.
+For real-world flight, training, exams, or operational decisions, always use the official AIP, current charts, NOTAMs, ATC instructions, and valid aviation regulations.
+
+If the PDF quality is low, the chart is outdated, or the text/OCR layer is missing, some values may be incomplete or incorrectly detected.
+Always verify critical numerical values directly on the chart.
+
+
+7. QUICK RECOMMENDATION
+-----------------------
+
+The most effective way to use Ciguli is:
+
+"Select the chart first, ask for the operational values one by one, then ask Ciguli to summarize the procedure in pilot briefing format."
+
+This makes Ciguli work less like a generic chatbot and more like a practical chart-reading assistant.

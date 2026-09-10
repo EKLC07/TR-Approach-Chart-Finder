@@ -1,0 +1,135 @@
+TÜRKİYE CHART LAB - CİGULİ KULLANIM REHBERİ
+============================================
+
+Ciguli, Türkiye Approach Chart Lab içinde seçtiğin meydan ve chart bağlamına göre çalışan yerel uçuş yardımcısıdır.
+Amacı; yaklaşma chartlarını daha hızlı okumana, önemli değerleri ayırmana ve prosedürü daha anlaşılır hale getirmene yardımcı olmaktır.
+
+
+1. EN İYİ SONUÇ İÇİN ÖNCE CHART SEÇ
+-----------------------------------
+
+Ciguli en iyi cevabı, ekranda bir meydan ve chart seçiliyken verir.
+
+Önerilen akış:
+
+1) Sol panelden meydanı seç.
+2) "PDF chartları tara" veya "Tüm meydanları tara" ile chart listesini getir.
+3) İlgili chartı seç.
+4) Gerekirse "Seçili chartı analiz et" butonuna bas.
+5) Sorunu Ciguli'ye kısa ve net şekilde yaz.
+
+Örnek:
+
+- "Bu chart hangi pist için?"
+- "Bu yaklaşmada minima kaç?"
+- "APP ne zaman başlıyor?"
+- "3 derece alçalma hangi irtifada başlıyor?"
+- "Missed approach'u Türkçe anlat."
+- "Bu prosedürü adım adım özetle."
+
+
+2. CİGULİ'YE NASIL SORU SORULMALI?
+----------------------------------
+
+Ciguli kısa, doğrudan ve bağlamlı sorularda daha iyi çalışır.
+
+İyi örnekler:
+
+- "RWY 03C için course değeri nedir?"
+- "Max holding speed kaç?"
+- "VOR/NDB/DME frekanslarını listele."
+- "Transition altitude kaç?"
+- "AD elevation ve threshold elevation değerlerini söyle."
+- "Missed approach prosedürünü pilot diliyle açıkla."
+- "Bu chartta hangi navigasyon yardımcıları kullanılıyor?"
+- "Minima değerlerini kategoriye göre ayır."
+
+Daha zayıf örnekler:
+
+- "Bunu anlat."
+- "Ne yapacağım?"
+- "Her şeyi söyle."
+
+Bu tarz genel sorularda Ciguli yine yardımcı olur; ama en iyi sonuç için neyi istediğini belirtmek daha iyidir.
+
+
+3. CİGULİ HANGİ VERİLERİ ÖNE ÇIKARIR?
+-------------------------------------
+
+Chart analizi yapıldığında Ciguli özellikle operasyonel olarak işe yarayan bilgileri öne çıkarmaya çalışır:
+
+- Meydan adı ve şehir
+- Pist adı
+- Yaklaşma tipi
+- Course / baş değeri
+- AD elevation
+- Threshold elevation
+- Transition altitude
+- APP / profil başlangıç irtifaları
+- 3 derecelik alçalmanın başladığı nokta veya irtifa
+- MAPt / missed approach point
+- Max holding speed
+- VOR, NDB, DME, ILS, ATIS gibi frekanslar
+- Minima değerleri
+- Missed approach metni
+- Kullanılan navigasyon yardımcıları
+
+Boş veya operasyonel değeri düşük metinler yerine, uçuşta gerçekten bakılacak sayısal değerleri ve prosedür bilgisini önceliklendirir.
+
+
+4. TÜRKÇE VE İNGİLİZCE KULLANIM
+-------------------------------
+
+Ciguli hem Türkçe hem İngilizce soruları anlayacak şekilde tasarlanmıştır.
+
+Örnek Türkçe sorular:
+
+- "Hangi şehir bu?"
+- "Meydan nerede?"
+- "Pist yönü kaç derece?"
+- "Missed approach'u Türkçe anlat."
+
+Örnek İngilizce sorular:
+
+- "Which runway is this chart for?"
+- "What is the minimum?"
+- "Summarize the missed approach."
+- "List the frequencies."
+
+Uygulama dili değiştirildiğinde arayüz dili uyarlanır; Ciguli'ye hangi dilde yazarsan o dile yakın cevap vermesi beklenir.
+
+
+5. CHART OKURKEN PRATİK KULLANIM
+--------------------------------
+
+Bir yaklaşma chartını çalışırken şu sırayla sormak verimli olur:
+
+1) "Bu chartı kısa özetle."
+2) "Pist, yaklaşma tipi ve course değerini söyle."
+3) "Frekansları listele."
+4) "Alçalma başlangıcı ve profil irtifalarını çıkar."
+5) "Minima değerlerini ayır."
+6) "Missed approach'u sade Türkçe anlat."
+7) "Pilot briefing gibi toparla."
+
+Bu akış, chartı ezbere okumak yerine operasyonel sıraya koyar.
+
+
+6. DİKKAT EDİLMESİ GEREKENLER
+-----------------------------
+
+Ciguli yardımcı bir okuma ve özetleme aracıdır.
+Gerçek uçuş, eğitim, sınav veya operasyonel kararlar için resmi AIP, güncel chart, NOTAM, ATC talimatı ve geçerli havacılık kuralları esas alınmalıdır.
+
+PDF kalitesi düşükse, chart çok eskiyse veya metin katmanı/OCR eksikse bazı değerler eksik ya da hatalı okunabilir.
+Bu yüzden kritik sayısal değerleri daima chart üzerinde görerek kontrol etmek gerekir.
+
+
+7. KISA ÖNERİ
+-------------
+
+Ciguli'yi en etkili kullanmanın yolu şudur:
+
+"Önce chartı seç, sonra tek tek operasyonel değerleri sor, en son da prosedürü pilot briefing formatında özetlet."
+
+Bu şekilde Ciguli, sohbet eden basit bir bot gibi değil; chart okuma sürecini hızlandıran pratik bir yardımcı gibi çalışır.
