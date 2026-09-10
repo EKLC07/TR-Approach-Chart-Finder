@@ -6,43 +6,43 @@ This version uses a Python backend, so the project is easier to read, modify, an
 
 ## Easy Windows Setup
 
-1. Click the green `Code` button on GitHub.
-2. Select `Download ZIP`.
+1. Click the green Code button on GitHub.
+2. Select Download ZIP.
 3. Extract the ZIP file.
-4. Double-click `TR-Approach-Chart-Finder-Setup.cmd`.
+4. Double-click TR-Approach-Chart-Finder-Setup.cmd.
 
 The setup file prepares the required portable Python runtime automatically, creates a desktop shortcut, and starts the app. The user does not need to install Node.js, Python, or extra packages manually.
 
 ## How To Use
 
-After setup, double-click the `TR Approach Chart Finder` shortcut on your desktop.
+After setup, double-click the TR Approach Chart Finder shortcut on your desktop.
 
-The app runs locally in your browser at `http://localhost:8787`.
+The app runs locally in your browser at localhost:8787.
 
 ## Uninstall
 
-To remove the desktop shortcut and local runtime files, double-click `TR-Approach-Chart-Finder-Uninstall.cmd`.
+To remove the desktop shortcut and local runtime files, double-click TR-Approach-Chart-Finder-Uninstall.cmd.
 
 After uninstalling, you can delete the project folder if you no longer need it.
 
 ## Project Structure
 
-- `app/main.py` starts the local web server.
-- `app/data/airports.py` stores airport data.
-- `app/services/charts.py` finds and serves chart PDFs.
-- `app/services/runways.py` loads runway data.
-- `app/services/airport_info.py` builds airport notes.
-- `app/services/assistant.py` connects the web app to the assistant engine.
-- `app/ai/engine.py` contains the main assistant logic.
-- `app/ai/knowledge.py` contains aviation topic responses.
-- `app/ai/daily_talk.py` contains Turkish/English everyday conversation behavior.
-- `app/ai/vocabulary.py` loads the Turkish/English vocabulary bank.
-- `app/ai/trainer.py` saves owner-only assistant training data.
-- `app/ai/language.py` contains Turkish/English language detection helpers.
-- `app/ai/training_data/` contains notes and examples you can edit to shape Ciguli.
-- `tools/build_ciguli_language_bank.py` rebuilds Ciguli's Turkish/English language bank.
-- `outputs/turkiye-chart-finder.html` is the browser interface.
-- `owner-tools/` contains owner-only development and training tools. Do not include this folder in public customer builds.
+- app/main.py starts the local web server.
+- app/data/airports.py stores airport data.
+- app/services/charts.py finds and serves chart PDFs.
+- app/services/runways.py loads runway data.
+- app/services/airport_info.py builds airport notes.
+- app/services/assistant.py connects the web app to the assistant engine.
+- app/ai/engine.py contains the main assistant logic.
+- app/ai/knowledge.py contains aviation topic responses.
+- app/ai/daily_talk.py contains Turkish/English everyday conversation behavior.
+- app/ai/vocabulary.py loads the Turkish/English vocabulary bank.
+- app/ai/trainer.py saves owner-only assistant training data.
+- app/ai/language.py contains Turkish/English language detection helpers.
+- app/ai/training_data/ contains notes and examples you can edit to shape Ciguli.
+- tools/build_ciguli_language_bank.py rebuilds Ciguli's Turkish/English language bank.
+- outputs/turkiye-chart-finder.html is the browser interface.
+- owner-tools/ contains owner-only development and training tools. Do not include this folder in public customer builds.
 
 ## Assistant Direction
 
@@ -62,7 +62,7 @@ The assistant panel is being shaped as the product brain of the app. The assista
 
 Easy setup:
 
-1. Double-click `TR-Approach-Chart-Finder-Setup.cmd`.
+1. Double-click TR-Approach-Chart-Finder-Setup.cmd.
 2. The installer prepares Python and creates the desktop shortcut.
 3. Start chatting; Ciguli creates its local memory while you use it.
 
@@ -70,31 +70,28 @@ Easy setup:
 
 Ciguli learns user preferences from conversation over time and stores them locally in:
 
-- `app/ai/ciguli_memory.local.json`
-
-This file is ignored by Git. It should stay on the user's computer.
+- app/ai/ciguli_memory.local.json
 
 ## Ciguli Language Bank
 
 Ciguli's starter language bank is stored in:
 
-- `app/ai/training_data/vocabulary_tr.txt`
-- `app/ai/training_data/vocabulary_en.txt`
-- `app/ai/training_data/phrase_bank_tr.json`
-- `app/ai/training_data/phrase_bank_en.json`
+- app/ai/training_data/vocabulary_tr.txt
+- app/ai/training_data/vocabulary_en.txt
+- app/ai/training_data/phrase_bank_tr.json
+- app/ai/training_data/phrase_bank_en.json
 
 Current starter target:
 
 - Turkish: 16000+ entries
 - English: 16000+ entries
 
-To rebuild the language bank, run `tools/build_ciguli_language_bank.py` from the project folder.
+To rebuild the language bank, run tools/build_ciguli_language_bank.py from the project folder.
 
 ## Owner Training
 
 The customer-facing app does not show assistant training tools.
 
-For development, the owner can open `owner-tools/Ciguli-Trainer.cmd` to train Ciguli through a private local trainer panel.
 
 ## Important Note
 
